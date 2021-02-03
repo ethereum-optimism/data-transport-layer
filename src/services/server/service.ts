@@ -43,7 +43,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       this.options.addressManager
     )
 
-    this.state.app.get(`/l2/chainid`, async (req, res) => {
+    this.state.app.get(`/ovm/chainid`, async (req, res) => {
       try {
         const chainid = BigNumber.from(
           await this.state.contracts.OVM_ExecutionManager.ovmCHAINID()
