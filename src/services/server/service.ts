@@ -28,7 +28,6 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     db: TransportDB
     l1RpcProvider: JsonRpcProvider
     contracts: OptimismContracts
-    chainId: number
   } = {} as any
 
   protected async _init(): Promise<void> {
@@ -44,11 +43,20 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       this.options.addressManager
     )
 
-    this.state.chainId = BigNumber.from(
-      await this.state.contracts.OVM_ExecutionManager.ovmCHAINID()
-    ).toNumber()
+    this.state.app.get(`/l2/chainid`, async (req, res) => {
+      try {
+        const chainid = BigNumber.from(
+          await this.state.contracts.OVM_ExecutionManager.ovmCHAINID()
+        ).toNumber()
 
-    this.logger.info(`L2 (Optimism) Chain ID is: ${this.state.chainId}`)
+        return res.json({
+          chainid,
+        })
+      } catch (e) {
+        res.status(400)
+        res.json({ error: e.toString() })
+      }
+    })
 
     this.state.app.get('/eth/context/latest', async (req, res) => {
       try {
@@ -60,7 +68,6 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
         return res.json({
           blockNumber: block.number,
           timestamp: block.timestamp,
-          chainId: this.state.chainId,
         })
       } catch (e) {
         res.status(400)
@@ -79,7 +86,6 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
           return res.json({
             blockNumber: null,
             timestamp: null,
-            chainId: this.state.chainId,
           })
         }
 
@@ -88,7 +94,6 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
         return res.json({
           blockNumber: block.number,
           timestamp: block.timestamp,
-          chainId: this.state.chainId,
         })
       } catch (e) {
         res.status(400)
