@@ -54,6 +54,32 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       }
     })
 
+    this.state.app.get('/eth/context/index/:block', async (req, res) => {
+      const index = BigNumber.from(req.params.index).toNumber()
+      try {
+        const currentBlockNumber =
+          (await this.state.l1RpcProvider.getBlockNumber()) -
+          this.options.confirmations
+
+        if (index > currentBlockNumber) {
+          return res.json({
+            blockNumber: null,
+            timestamp: null,
+          })
+        }
+
+        const block = await this.state.l1RpcProvider.getBlock(index)
+
+        return res.json({
+          blockNumber: block.number,
+          timestamp: block.timestamp,
+        })
+      } catch (e) {
+        res.status(400)
+        res.json({ error: e.toString() })
+      }
+    })
+
     this.state.app.get('/enqueue/latest', async (req, res) => {
       try {
         const enqueue = await this.state.db.getLatestEnqueue()
