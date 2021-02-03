@@ -6,11 +6,13 @@ import { JsonRpcProvider } from '@ethersproject/providers'
 
 /* Imports: Internal */
 import { TransportDB } from '../../db/db'
+import { loadOptimismContracts, OptimismContracts } from '../../utils'
 
 export interface L1TransportServerOptions {
   db: any
   port: number
   confirmations: number
+  addressManager: string
   l1RpcEndpoint: string
 }
 
@@ -25,6 +27,8 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     server: any
     db: TransportDB
     l1RpcProvider: JsonRpcProvider
+    contracts: OptimismContracts
+    chainId: number
   } = {} as any
 
   protected async _init(): Promise<void> {
@@ -35,18 +39,28 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     this.state.db = new TransportDB(this.options.db)
     this.state.app = express()
     this.state.l1RpcProvider = new JsonRpcProvider(this.options.l1RpcEndpoint)
+    this.state.contracts = await loadOptimismContracts(
+      this.state.l1RpcProvider,
+      this.options.addressManager
+    )
+
+    this.state.chainId = BigNumber.from(
+      await this.state.contracts.OVM_ExecutionManager.ovmCHAINID()
+    ).toNumber()
+
+    this.logger.info(`L2 (Optimism) Chain ID is: ${this.state.chainId}`)
 
     this.state.app.get('/eth/context/latest', async (req, res) => {
       try {
         const blockNumber =
           (await this.state.l1RpcProvider.getBlockNumber()) -
           this.options.confirmations
-        const timestamp = (await this.state.l1RpcProvider.getBlock(blockNumber))
-          .timestamp
+        const block = await this.state.l1RpcProvider.getBlock(blockNumber)
 
-        res.json({
-          blockNumber,
-          timestamp,
+        return res.json({
+          blockNumber: block.number,
+          timestamp: block.timestamp,
+          chainId: this.state.chainId,
         })
       } catch (e) {
         res.status(400)
@@ -65,6 +79,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
           return res.json({
             blockNumber: null,
             timestamp: null,
+            chainId: this.state.chainId,
           })
         }
 
@@ -73,6 +88,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
         return res.json({
           blockNumber: block.number,
           timestamp: block.timestamp,
+          chainId: this.state.chainId,
         })
       } catch (e) {
         res.status(400)
