@@ -120,6 +120,13 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
         const highestL2BlockNumber = await this.state.db.getHighestL2BlockNumber()
         const currentL2Block = await this.state.db.getLatestTransaction()
 
+        if (currentL2Block === null && highestL2BlockNumber === null) {
+          return {
+            syncing: false,
+            currentBlock: 0,
+          }
+        }
+
         if (currentL2Block === null) {
           return {
             syncing: true,
@@ -134,11 +141,11 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
             highestKnownBlock: highestL2BlockNumber,
             currentBlock: currentL2Block.index,
           }
-        } else {
-          return {
-            syncing: false,
-            currentBlock: currentL2Block.index,
-          }
+        }
+
+        return {
+          syncing: false,
+          currentBlock: currentL2Block.index,
         }
       }
     )
