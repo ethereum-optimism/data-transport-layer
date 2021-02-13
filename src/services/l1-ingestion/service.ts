@@ -29,6 +29,7 @@ export interface L1IngestionServiceOptions {
   addressManager: string
   confirmations: number
   l1RpcProvider: string | JsonRpcProvider
+  startingL1BlockNumber: number | null
   pollingInterval: number
   logsPerPollingInterval: number
   dangerouslyCatchAllErrors?: boolean
@@ -99,22 +100,21 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
       this.options.addressManager
     )
 
-    const startingL1BlockNumber = await this.state.db.getStartingL1Block()
-    if (startingL1BlockNumber) {
-      this.state.startingL1BlockNumber = startingL1BlockNumber
+    if (this.options.startingL1BlockNumber) {
+      this.state.startingL1BlockNumber = this.options.startingL1BlockNumber
     } else {
       this.logger.info(
         `Attempting to find an appropriate L1 block height to begin sync...`
       )
       this.state.startingL1BlockNumber = await this._findStartingL1BlockNumber()
-      this.logger.info(
-        `Starting sync at block ${colors.yellow(
-          `${this.state.startingL1BlockNumber}`
-        )}`
-      )
-
-      await this.state.db.setStartingL1Block(this.state.startingL1BlockNumber)
     }
+    this.logger.info(
+      `Starting sync at block ${colors.yellow(
+        `${this.state.startingL1BlockNumber}`
+      )}`
+    )
+
+    await this.state.db.setStartingL1Block(this.state.startingL1BlockNumber)
 
     // Store the total number of submitted transactions so the server can tell clients if we're
     // done syncing or not

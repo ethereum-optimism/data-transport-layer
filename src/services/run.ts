@@ -18,6 +18,7 @@ import { L1DataTransportService } from './main/service'
         10
       ),
       l1RpcProvider: process.env.DATA_TRANSPORT_LAYER__L1_RPC_ENDPOINT,
+      startingL1BlockNumber: parseInt(process.env.DATA_TRANSPORT_LAYER__L1_START_HEIGHT, 10) || null,
       addressManager: process.env.DATA_TRANSPORT_LAYER__ADDRESS_MANAGER,
       pollingInterval: parseInt(
         process.env.DATA_TRANSPORT_LAYER__POLLING_INTERVAL,
