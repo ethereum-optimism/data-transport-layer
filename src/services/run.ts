@@ -23,7 +23,7 @@ interface Bcfg {
     })
 
     const service = new L1DataTransportService({
-      db: config.str('dbPath', './db'),
+      dbPath: config.str('dbPath', './db'),
       port: config.uint('serverPort', 7878),
       hostname: config.str('serverHostname', 'localhost'),
       confirmations: config.uint('confirmations', 12),

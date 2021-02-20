@@ -1,5 +1,8 @@
-/* Imports: Internal */
+/* Imports: External */
+import { LevelUp } from 'levelup'
 import { BigNumber } from 'ethers'
+
+/* Imports: Internal */
 import {
   EnqueueEntry,
   StateRootBatchEntry,
@@ -30,7 +33,7 @@ interface Indexed {
 export class TransportDB {
   public db: SimpleDB
 
-  constructor(leveldb: any) {
+  constructor(leveldb: LevelUp) {
     this.db = new SimpleDB(leveldb)
   }
 

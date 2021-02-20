@@ -1,9 +1,9 @@
-/* Imports: Internal */
+/* Imports: External */
+import { LevelUp } from 'levelup'
 import { BigNumber } from 'ethers'
 
 export class SimpleDB {
-  // TODO: Ugh, we need a type for this db.
-  constructor(public db: any) {}
+  constructor(public db: LevelUp) {}
 
   public async get<TEntry>(key: string, index: number): Promise<TEntry | null> {
     try {

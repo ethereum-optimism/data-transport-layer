@@ -2,19 +2,17 @@
 import { BaseService } from '@eth-optimism/service-base'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import colors from 'colors/safe'
+import { LevelUp } from 'levelup'
 
 /* Imports: Internal */
 import { TransportDB } from '../../db/transport-db'
 import { sleep, toRpcHexString, validators } from '../../utils'
+import { L1DataTransportServiceOptions } from '../main/service'
 import { handleSequencerBlock } from './handlers/transaction'
 
-export interface L2IngestionServiceOptions {
-  db: any
-  l2RpcProvider: string | JsonRpcProvider
-  l2ChainId: number
-  pollingInterval: number
-  transactionsPerPollingInterval: number
-  dangerouslyCatchAllErrors?: boolean
+export interface L2IngestionServiceOptions
+  extends L1DataTransportServiceOptions {
+  db: LevelUp
 }
 
 export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {

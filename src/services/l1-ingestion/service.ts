@@ -3,6 +3,7 @@ import { BaseService } from '@eth-optimism/service-base'
 import { fromHexString, ZERO_ADDRESS } from '@eth-optimism/core-utils'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import colors from 'colors/safe'
+import { LevelUp } from 'levelup'
 
 /* Imports: Internal */
 import { TransportDB } from '../../db/transport-db'
@@ -21,15 +22,11 @@ import {
 import { handleEventsTransactionEnqueued } from './handlers/transaction-enqueued'
 import { handleEventsSequencerBatchAppended } from './handlers/sequencer-batch-appended'
 import { handleEventsStateBatchAppended } from './handlers/state-batch-appended'
+import { L1DataTransportServiceOptions } from '../main/service'
 
-export interface L1IngestionServiceOptions {
-  db: any
-  addressManager: string
-  confirmations: number
-  l1RpcProvider: string | JsonRpcProvider
-  pollingInterval: number
-  logsPerPollingInterval: number
-  dangerouslyCatchAllErrors?: boolean
+export interface L1IngestionServiceOptions
+  extends L1DataTransportServiceOptions {
+  db: LevelUp
 }
 
 export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {

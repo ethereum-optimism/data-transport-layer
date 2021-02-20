@@ -4,6 +4,7 @@ import express, { Request, Response } from 'express'
 import cors from 'cors'
 import { BigNumber } from 'ethers'
 import { JsonRpcProvider } from '@ethersproject/providers'
+import { LevelUp } from 'levelup'
 
 /* Imports: Internal */
 import { TransportDB } from '../../db/transport-db'
@@ -17,14 +18,11 @@ import {
   TransactionResponse,
 } from '../../types'
 import { validators } from '../../utils'
+import { L1DataTransportServiceOptions } from '../main/service'
 
-export interface L1TransportServerOptions {
-  db: any
-  port: number
-  hostname: string
-  confirmations: number
-  l1RpcProvider: string | JsonRpcProvider
-  showUnconfirmedTransactions: boolean
+export interface L1TransportServerOptions
+  extends L1DataTransportServiceOptions {
+  db: LevelUp
 }
 
 export class L1TransportServer extends BaseService<L1TransportServerOptions> {

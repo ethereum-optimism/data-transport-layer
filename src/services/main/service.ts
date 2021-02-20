@@ -1,25 +1,31 @@
 /* Imports: External */
-import level from 'level'
 import { BaseService } from '@eth-optimism/service-base'
+import { LevelUp } from 'levelup'
+import level from 'level'
 
 /* Imports: Internal */
-import {
-  L1IngestionService,
-  L1IngestionServiceOptions,
-} from '../l1-ingestion/service'
-import { L1TransportServer, L1TransportServerOptions } from '../server/service'
-import {
-  L2IngestionService,
-  L2IngestionServiceOptions,
-} from '../l2-ingestion/service'
+import { L1IngestionService } from '../l1-ingestion/service'
+import { L1TransportServer } from '../server/service'
 import { validators } from '../../utils'
+import { L2IngestionService } from '../l2-ingestion/service'
 
-type L1DataTransportServiceOptions = L1IngestionServiceOptions &
-  L1TransportServerOptions &
-  L2IngestionServiceOptions & {
-    syncFromL1?: boolean
-    syncFromL2?: boolean
-  }
+export interface L1DataTransportServiceOptions {
+  addressManager: string
+  confirmations: number
+  dangerouslyCatchAllErrors?: boolean
+  hostname: string
+  l1RpcProvider: string
+  l2ChainId: number
+  l2RpcProvider: string
+  dbPath: string
+  logsPerPollingInterval: number
+  pollingInterval: number
+  port: number
+  showUnconfirmedTransactions: boolean
+  syncFromL1?: boolean
+  syncFromL2?: boolean
+  transactionsPerPollingInterval: number
+}
 
 export class L1DataTransportService extends BaseService<L1DataTransportServiceOptions> {
   protected name = 'L1 Data Transport Service'
@@ -36,7 +42,7 @@ export class L1DataTransportService extends BaseService<L1DataTransportServiceOp
   }
 
   private state: {
-    db: any
+    db: LevelUp
     l1IngestionService?: L1IngestionService
     l2IngestionService?: L2IngestionService
     l1TransportServer: L1TransportServer
@@ -44,7 +50,7 @@ export class L1DataTransportService extends BaseService<L1DataTransportServiceOp
 
   protected async _init(): Promise<void> {
     console.log(this.options)
-    this.state.db = level(this.options.db)
+    this.state.db = level(this.options.dbPath)
     await this.state.db.open()
 
     this.state.l1TransportServer = new L1TransportServer({
