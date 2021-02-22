@@ -113,10 +113,6 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
           nextTxPointer
         )
 
-        const { decoded, type } = maybeDecodeSequencerBatchTransaction(
-          sequencerTransaction
-        )
-
         transactionEntries.push({
           index: extraData.prevTotalElements
             .add(BigNumber.from(transactionIndex))
@@ -129,9 +125,7 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
           origin: null,
           data: toHexString(sequencerTransaction),
           queueOrigin: 'sequencer',
-          type,
           queueIndex: null,
-          decoded,
           confirmed: true,
         })
 
@@ -161,9 +155,7 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
           origin: ZERO_ADDRESS,
           data: '0x',
           queueOrigin: 'l1',
-          type: 'EIP155',
           queueIndex: queueIndex.toNumber(),
-          decoded: null,
           confirmed: true,
         })
 
@@ -242,56 +234,4 @@ const parseSequencerBatchTransaction = (
   ).toNumber()
 
   return calldata.slice(offset + 3, offset + 3 + transactionLength)
-}
-
-const maybeDecodeSequencerBatchTransaction = (
-  transaction: Buffer
-): {
-  decoded: DecodedSequencerBatchTransaction | null
-  type: 'EIP155' | 'ETH_SIGN' | null
-} => {
-  let decoded = null
-  let type = null
-
-  try {
-    const txType = transaction.slice(0, 1).readUInt8()
-    if (txType === TxType.EIP155) {
-      type = 'EIP155'
-      decoded = ctcCoder.eip155TxData.decode(transaction.toString('hex'))
-    } else if (txType === TxType.EthSign) {
-      type = 'ETH_SIGN'
-      decoded = ctcCoder.ethSignTxData.decode(transaction.toString('hex'))
-    } else {
-      throw new Error(`Unknown sequencer transaction type.`)
-    }
-    // Validate the transaction
-    if (!validateBatchTransaction(type, decoded)) {
-      decoded = null
-    }
-  } catch (err) {
-    // Do nothing
-  }
-
-  return {
-    decoded,
-    type,
-  }
-}
-
-export function validateBatchTransaction(
-  type: string | null,
-  decoded: DecodedSequencerBatchTransaction | null
-): boolean {
-  // Unknown types are considered invalid
-  if (type === null) {
-    return false
-  }
-  if (type === 'EIP155' || type === 'ETH_SIGN') {
-    if (decoded.sig.v !== 1 && decoded.sig.v !== 0) {
-      return false
-    }
-    return true
-  }
-  // Allow soft forks
-  return false
 }
