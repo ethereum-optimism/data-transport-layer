@@ -31,7 +31,6 @@ export const handleSequencerBlock = {
       blockNumber: BigNumber.from(transaction.l1BlockNumber).toNumber(),
       timestamp: BigNumber.from(transaction.l1Timestamp).toNumber(),
       queueOrigin: transaction.queueOrigin,
-      type: parseTxType(transaction.txType),
       queueIndex:
         transaction.queueIndex === null
           ? null
@@ -58,11 +57,11 @@ export const handleSequencerBlock = {
         gasLimit: SEQUENCER_GAS_LIMIT, // ?
         target: SEQUENCER_ENTRYPOINT_ADDRESS,
         origin: null,
+        // TODO: Remove this when we change geth.
         data: maybeEncodeSequencerBatchTransaction(
           decodedTransaction,
           transaction.txType
         ),
-        decoded: decodedTransaction,
       }
     } else {
       transactionEntry = {
@@ -71,7 +70,6 @@ export const handleSequencerBlock = {
         target: ethers.utils.getAddress(transaction.to),
         origin: ethers.utils.getAddress(transaction.l1TxOrigin),
         data: transaction.input,
-        decoded: null,
       }
     }
 
