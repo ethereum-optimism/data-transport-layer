@@ -35,19 +35,24 @@ jobs:
           draft: false
           prerelease: false
 
-  publish:
-    name: Build and publish
+  docker:
+    name: Build & Push to DockerHub
     runs-on: ubuntu-latest
     needs: tag
     if: needs.tag.outputs.tag_name
+
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14.x'
-          registry-url: 'https://registry.npmjs.org'
-      - run: yarn
-      - run: yarn build
-      - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Login to DockerHub Registry
+        run: echo ${{ secrets.DOCKERHUB_ACCESS_TOKEN_SECRET }} | docker login -u ${{ secrets.DOCKERHUB_ACCESS_TOKEN_USERNAME}} --password-stdin
+
+      - name: Build and push Optimistic Ethereum Node image to DockerHub
+        run: |
+          git clone https://github.com/ethereum-optimism/docker.git \
+              $HOME/docker
+          cd $HOME/docker
+          ./build.sh -s data-transport-layer -b ${{ needs.tag.outputs.tag_name }}
+          docker push ethereumoptimism/data-transport-layer:${{ needs.tag.outputs.tag_name }}
+      - name: Logout of DockerHub
+        run: docker logout
