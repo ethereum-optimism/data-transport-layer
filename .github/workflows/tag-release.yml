@@ -35,12 +35,29 @@ jobs:
           draft: false
           prerelease: false
 
+  npm-publish:
+    name: Build & publish to npm
+    runs-on: ubuntu-latest
+    needs: tag
+    if: needs.tag.outputs.tag_name
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: yarn
+      - run: yarn build
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+
   docker:
     name: Build & Push to DockerHub
     runs-on: ubuntu-latest
     needs: tag
     if: needs.tag.outputs.tag_name
-
     steps:
       - uses: actions/checkout@v2
 
