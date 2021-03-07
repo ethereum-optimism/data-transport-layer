@@ -119,7 +119,7 @@ describe('L1 Data Ingeston Service', () => {
       l1RpcProvider: ethers.provider,
       confirmations: 0,
       pollingInterval: 1, // 1ms. Probably fine for testing?
-      dbPath: './test/temp/db',
+      dbPath: `./test/temp/db-${Date.now()}`,
     })
 
     service.start()
@@ -158,9 +158,6 @@ describe('L1 Data Ingeston Service', () => {
         encodeAppendSequencerBatch(batch1),
     })
 
-    const timestamp2 = Math.floor(Date.now() / 1000)
-    const blockNumber2 = await ethers.provider.getBlockNumber()
-
     OVM_CanonicalTransactionChain = await getContractFactory(
       'OVM_CanonicalTransactionChain',
       signer
@@ -175,6 +172,9 @@ describe('L1 Data Ingeston Service', () => {
       'OVM_CanonicalTransactionChain',
       OVM_CanonicalTransactionChain.address
     )
+
+    const timestamp2 = Math.floor(Date.now() / 1000)
+    const blockNumber2 = await ethers.provider.getBlockNumber()
 
     const batch2 = {
       shouldStartAtBatch: 10,
@@ -205,5 +205,57 @@ describe('L1 Data Ingeston Service', () => {
 
     expect(latest.transaction.index).to.equal(19)
     expect(latest.batch.index).to.equal(1)
+  })
+
+  it('should handle a ridiculous number of CTC address changes', async () => {
+    for (let i = 0; i < 100; i++) {
+      const timestamp1 = Math.floor(Date.now() / 1000)
+      const blockNumber1 = await ethers.provider.getBlockNumber()
+
+      const batch1 = {
+        shouldStartAtBatch: i * 10,
+        totalElementsToAppend: 10,
+        contexts: [
+          {
+            numSequencedTransactions: 10,
+            numSubsequentQueueTransactions: 0,
+            timestamp: timestamp1,
+            blockNumber: blockNumber1,
+          },
+        ],
+        transactions: [...Array(10)].map((_, i) => {
+          return '0x' + '69'.repeat(i)
+        }),
+      }
+
+      await signer.sendTransaction({
+        to: OVM_CanonicalTransactionChain.address,
+        data:
+          ethers.utils.id('appendSequencerBatch()').slice(0, 10) +
+          encodeAppendSequencerBatch(batch1),
+      })
+
+      OVM_CanonicalTransactionChain = await getContractFactory(
+        'OVM_CanonicalTransactionChain',
+        signer
+      ).deploy(
+        Lib_AddressManager.address,
+        600, // forceInclusionPeriodSeconds
+        10, // forceInclusionPeriodBlocks
+        100_000_000 // maxTransactionGasLimit
+      )
+
+      await Lib_AddressManager.setAddress(
+        'OVM_CanonicalTransactionChain',
+        OVM_CanonicalTransactionChain.address
+      )
+    }
+
+    await sleep(10000)
+
+    const latest = await client.getLatestTransaction()
+
+    expect(latest.transaction.index).to.equal(999)
+    expect(latest.batch.index).to.equal(99)
   })
 })
