@@ -135,6 +135,7 @@ describe('L1 Data Ingeston Service', () => {
     const timestamp1 = Math.floor(Date.now() / 1000)
     const blockNumber1 = await ethers.provider.getBlockNumber()
 
+    // Create a batch of 10 transactions to the first CTC.
     const batch1 = {
       shouldStartAtBatch: 0,
       totalElementsToAppend: 10,
@@ -151,6 +152,7 @@ describe('L1 Data Ingeston Service', () => {
       }),
     }
 
+    // Submit the batch.
     await signer.sendTransaction({
       to: OVM_CanonicalTransactionChain.address,
       data:
@@ -158,6 +160,7 @@ describe('L1 Data Ingeston Service', () => {
         encodeAppendSequencerBatch(batch1),
     })
 
+    // Create a new CTC.
     OVM_CanonicalTransactionChain = await getContractFactory(
       'OVM_CanonicalTransactionChain',
       signer
@@ -168,6 +171,7 @@ describe('L1 Data Ingeston Service', () => {
       100_000_000 // maxTransactionGasLimit
     )
 
+    // Update the CTC address in the AddressManager.
     await Lib_AddressManager.setAddress(
       'OVM_CanonicalTransactionChain',
       OVM_CanonicalTransactionChain.address
@@ -176,6 +180,7 @@ describe('L1 Data Ingeston Service', () => {
     const timestamp2 = Math.floor(Date.now() / 1000)
     const blockNumber2 = await ethers.provider.getBlockNumber()
 
+    // Create a second batch.
     const batch2 = {
       shouldStartAtBatch: 10,
       totalElementsToAppend: 10,
@@ -192,6 +197,7 @@ describe('L1 Data Ingeston Service', () => {
       }),
     }
 
+    // Submit the second batch.
     await signer.sendTransaction({
       to: OVM_CanonicalTransactionChain.address,
       data:
@@ -202,12 +208,12 @@ describe('L1 Data Ingeston Service', () => {
     await sleep(1000)
 
     const latest = await client.getLatestTransaction()
-
     expect(latest.transaction.index).to.equal(19)
     expect(latest.batch.index).to.equal(1)
   })
 
   it('should handle a ridiculous number of CTC address changes', async () => {
+    // Submit 100 batches and switch CTC addresses after each batch.
     for (let i = 0; i < 100; i++) {
       const timestamp1 = Math.floor(Date.now() / 1000)
       const blockNumber1 = await ethers.provider.getBlockNumber()
@@ -251,10 +257,10 @@ describe('L1 Data Ingeston Service', () => {
       )
     }
 
+    // Wait a bit for the service to catch up.
     await sleep(10000)
 
     const latest = await client.getLatestTransaction()
-
     expect(latest.transaction.index).to.equal(999)
     expect(latest.batch.index).to.equal(99)
   })
