@@ -10,7 +10,7 @@ import { L1DataTransportService } from '../../../../src/services/main/service'
 import { L1DataTransportClient } from '../../../../src/client/client'
 import { sleep, encodeAppendSequencerBatch } from '@eth-optimism/core-utils'
 
-describe('L1 Data Ingeston Service', () => {
+describe('L1 Data Ingestion Service', () => {
   let signer: Signer
   before(async () => {
     ;[signer] = await ethers.getSigners()
@@ -205,6 +205,10 @@ describe('L1 Data Ingeston Service', () => {
         encodeAppendSequencerBatch(batch2),
     })
 
+    // We need a `sleep` here because there's a bit of processing time for each new thing that the
+    // service receives from L1. So the service needs a few seconds after all the events are
+    // emitted in order to sync to the tip. Using a `sleep` statement is the easiest way to account
+    // for this.
     await sleep(1000)
 
     const latest = await client.getLatestTransaction()
@@ -212,9 +216,9 @@ describe('L1 Data Ingeston Service', () => {
     expect(latest.batch.index).to.equal(1)
   })
 
-  it('should handle a ridiculous number of CTC address changes', async () => {
-    // Submit 100 batches and switch CTC addresses after each batch.
-    for (let i = 0; i < 100; i++) {
+  it('should handle a few quick of CTC address changes', async () => {
+    // Submit 5 batches and switch CTC addresses after each batch.
+    for (let i = 0; i < 5; i++) {
       const timestamp1 = Math.floor(Date.now() / 1000)
       const blockNumber1 = await ethers.provider.getBlockNumber()
 
@@ -257,7 +261,7 @@ describe('L1 Data Ingeston Service', () => {
       )
     }
 
-    // Wait a bit for the service to catch up.
+    // Wait a bit for the service to catch up. Same reason as above.
     await sleep(10000)
 
     const latest = await client.getLatestTransaction()
