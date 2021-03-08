@@ -10,7 +10,7 @@ import { L1DataTransportService } from '../../../../src/services/main/service'
 import { L1DataTransportClient } from '../../../../src/client/client'
 import { sleep, encodeAppendSequencerBatch } from '@eth-optimism/core-utils'
 
-describe('L1 Data Ingeston Service', () => {
+describe('L1 Data Ingestion Service', () => {
   let signer: Signer
   before(async () => {
     ;[signer] = await ethers.getSigners()
