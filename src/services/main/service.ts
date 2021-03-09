@@ -1,5 +1,6 @@
 /* Imports: External */
 import { BaseService } from '@eth-optimism/service-base'
+import { JsonRpcProvider } from '@ethersproject/providers'
 import { LevelUp } from 'levelup'
 import level from 'level'
 
@@ -10,22 +11,25 @@ import { validators } from '../../utils'
 import { L2IngestionService } from '../l2-ingestion/service'
 
 export interface L1DataTransportServiceOptions {
+  // Required
   addressManager: string
-  confirmations: number
+  l1RpcProvider: string | JsonRpcProvider
+
+  // Optional
+  confirmations?: number
+  hostname?: string
+  port?: number
+  dbPath?: string
+  pollingInterval?: number
+  logsPerPollingInterval?: number
   dangerouslyCatchAllErrors?: boolean
-  hostname: string
-  l1RpcProvider: string
-  l2ChainId: number
-  l2RpcProvider: string
-  dbPath: string
-  logsPerPollingInterval: number
-  pollingInterval: number
-  port: number
-  showUnconfirmedTransactions: boolean
+  l2RpcProvider?: string | JsonRpcProvider
+  l2ChainId?: number
+  showUnconfirmedTransactions?: boolean
   syncFromL1?: boolean
   syncFromL2?: boolean
-  transactionsPerPollingInterval: number
-  legacySequencerCompatibility: boolean
+  transactionsPerPollingInterval?: number
+  legacySequencerCompatibility?: boolean
   stopL2SyncAtBlock?: number
 }
 
@@ -33,11 +37,19 @@ export class L1DataTransportService extends BaseService<L1DataTransportServiceOp
   protected name = 'L1 Data Transport Service'
 
   protected optionSettings = {
+    dbPath: {
+      default: './db',
+      validate: validators.isString,
+    },
     syncFromL1: {
       default: true,
       validate: validators.isBoolean,
     },
     syncFromL2: {
+      default: false,
+      validate: validators.isBoolean,
+    },
+    showUnconfirmedTransactions: {
       default: false,
       validate: validators.isBoolean,
     },
