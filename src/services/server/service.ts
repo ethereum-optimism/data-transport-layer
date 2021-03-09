@@ -118,7 +118,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
 
     this.state.app[method](route, async (req, res) => {
       try {
-        this.logger.info('Registered route', {
+        this.logger.info('Request received', {
           ip: req.ip,
           method: method.toUpperCase(),
           path: req.path,
