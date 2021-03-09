@@ -265,7 +265,7 @@ describe('L1 Data Ingestion Service', () => {
     await sleep(10000)
 
     const latest = await client.getLatestTransaction()
-    expect(latest.transaction.index).to.equal(999)
+    expect(latest.transaction.index).to.equal(49)
     expect(latest.batch.index).to.equal(99)
   })
 })
