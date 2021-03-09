@@ -122,9 +122,11 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
         }
 
         this.logger.info(
-          `Synchronizing unconfirmed transactions from Layer 2 (Optimistic Ethereum) from block ${colors.yellow(
-            `${highestSyncedL2BlockNumber}`
-          )} to block ${colors.yellow(`${targetL2Block}`)}`
+          'Synchronizing unconfirmed transactions from Layer 2 (Optimistic Ethereum)',
+          {
+            fromBlock: highestSyncedL2BlockNumber,
+            toBlock: targetL2Block,
+          }
         )
 
         // Synchronize by requesting blocks from the sequencer. Sync from L1 takes precedence.
