@@ -1,6 +1,11 @@
-import { expect } from '../../../../setup'
+import { BigNumber } from 'ethers'
 
-import { validateBatchTransaction } from '../../../../../src/services/l1-ingestion/handlers/sequencer-batch-appended'
+import { expect } from '../../../../setup'
+import {
+  validateBatchTransaction,
+  handleEventsSequencerBatchAppended,
+} from '../../../../../src/services/l1-ingestion/handlers/sequencer-batch-appended'
+import { l1TransactionData } from '../examples/l1-data'
 
 describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended', () => {
   describe('validateBatchTransaction', () => {
@@ -107,6 +112,29 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
 
         expect(output1).to.equal(expected1)
       })
+    })
+  })
+
+  describe.only('handleEventsSequencerBatchAppended.parseEvent', () => {
+    it('should correctly parse a mainnet transaction', async () => {
+      const input1: [any, any] = [
+        { args: { _startingQueueIndex: BigNumber.from('0') } },
+        {
+          l1TransactionData,
+          gasLimit: '0',
+          prevTotalElements: BigNumber.from('0'),
+          batchIndex: BigNumber.from('0'),
+          batchSize: BigNumber.from('0'),
+          timestamp: BigNumber.from('0'),
+          blockNumber: BigNumber.from('11969713'),
+        },
+      ]
+
+      const output1 = await handleEventsSequencerBatchAppended.parseEvent(
+        ...input1
+      )
+
+      expect(output1.transactionEntries).to.have.length(101)
     })
   })
 })
