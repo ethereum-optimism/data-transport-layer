@@ -79,7 +79,10 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       this.options.port,
       this.options.hostname
     )
-    this.logger.info(`Server listening on port: ${this.options.port}`)
+    this.logger.info('Server started and listening', {
+      host: this.options.hostname,
+      port: this.options.port,
+    })
   }
 
   protected async _stop(): Promise<void> {
@@ -115,7 +118,11 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
 
     this.state.app[method](route, async (req, res) => {
       try {
-        this.logger.info(`${req.ip}: ${method.toUpperCase()} ${req.path}`)
+        this.logger.info('Registered route', {
+          ip: req.ip,
+          method: method.toUpperCase(),
+          path: req.path,
+        })
         return res.json(await handler(req, res))
       } catch (e) {
         return res.status(400).json({
