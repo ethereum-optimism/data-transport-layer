@@ -60,8 +60,8 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
 
   protected async _init(): Promise<void> {
     if (this.options.legacySequencerCompatibility) {
-      this.logger.interesting(
-        `Using legacy sync, this will be quite a bit slower than normal`
+      this.logger.info(
+        'Using legacy sync, this will be quite a bit slower than normal'
       )
     }
 
@@ -85,8 +85,8 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
           this.options.stopL2SyncAtBlock !== null &&
           highestSyncedL2BlockNumber >= this.options.stopL2SyncAtBlock
         ) {
-          this.logger.interesting(
-            `L2 sync is shutting down because we've reached your target block. Goodbye!`
+          this.logger.info(
+            "L2 sync is shutting down because we've reached your target block. Goodbye!"
           )
           return
         }
@@ -143,7 +143,7 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
         }
       } catch (err) {
         if (!this.running || this.options.dangerouslyCatchAllErrors) {
-          this.logger.error(`Caught an unhandled error: ${err}`)
+          this.logger.error('Caught an unhandled error', { err })
           await sleep(this.options.pollingInterval)
         } else {
           // TODO: Is this the best thing to do here?
@@ -163,9 +163,12 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
     endBlockNumber: number
   ): Promise<void> {
     if (startBlockNumber > endBlockNumber) {
-      this.logger.info(
-        `Cannot query with start block number ${startBlockNumber}` +
-          `larger than end block number ${endBlockNumber}`
+      this.logger.warn(
+        'Cannot query with start block number larger than end block number',
+        {
+          startBlockNumber,
+          endBlockNumber,
+        }
       )
       return
     }

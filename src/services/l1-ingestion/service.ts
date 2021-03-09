@@ -77,7 +77,9 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
         ? new JsonRpcProvider(this.options.l1RpcProvider)
         : this.options.l1RpcProvider
 
-    this.logger.info(`Using AddressManager at: ${this.options.addressManager}`)
+    this.logger.info('Using AddressManager', {
+      addressManager: this.options.addressManager,
+    })
 
     const Lib_AddressManager = loadContract(
       'Lib_AddressManager',
@@ -119,14 +121,12 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
       this.state.startingL1BlockNumber = startingL1BlockNumber
     } else {
       this.logger.info(
-        `Attempting to find an appropriate L1 block height to begin sync...`
+        'Attempting to find an appropriate L1 block height to begin sync...'
       )
       this.state.startingL1BlockNumber = await this._findStartingL1BlockNumber()
-      this.logger.info(
-        `Starting sync at block ${colors.yellow(
-          `${this.state.startingL1BlockNumber}`
-        )}`
-      )
+      this.logger.info('Starting sync', {
+        startingL1BlockNumber: this.state.startingL1BlockNumber,
+      })
 
       await this.state.db.setStartingL1Block(this.state.startingL1BlockNumber)
     }
@@ -161,11 +161,10 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
           continue
         }
 
-        this.logger.info(
-          `Synchronizing events from Layer 1 (Ethereum) from block ${colors.yellow(
-            `${highestSyncedL1Block}`
-          )} to block ${colors.yellow(`${targetL1Block}`)}`
-        )
+        this.logger.info('Synchronizing events from Layer 1 (Ethereum)', {
+          highestSyncedL1Block,
+          targetL1Block,
+        })
 
         // I prefer to do this in serial to avoid non-determinism. We could have a discussion about
         // using Promise.all if necessary, but I don't see a good reason to do so unless parsing is
@@ -204,7 +203,7 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
         }
       } catch (err) {
         if (!this.running || this.options.dangerouslyCatchAllErrors) {
-          this.logger.error(`Caught an unhandled error: ${err}`)
+          this.logger.error('Caught an unhandled error', { err })
           await sleep(this.options.pollingInterval)
         } else {
           // TODO: Is this the best thing to do here?
@@ -301,11 +300,11 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
 
         const tock = Date.now()
 
-        this.logger.success(
-          `Processed ${colors.magenta(`${events.length}`)} ${colors.cyan(
-            eventName
-          )} events in ${colors.red(`${tock - tick}ms`)}.`
-        )
+        this.logger.info('Processed events', {
+          eventName,
+          numEvents: events.length,
+          durationMs: tock - tick,
+        })
       }
     }
   }
