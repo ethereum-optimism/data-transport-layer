@@ -60,6 +60,9 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
         return validators.isUrl(val) || validators.isJsonRpcProvider(val)
       },
     },
+    l1ChainId: {
+      validate: validators.isInteger,
+    },
   }
 
   private state: {
@@ -76,6 +79,15 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
       typeof this.options.l1RpcProvider === 'string'
         ? new JsonRpcProvider(this.options.l1RpcProvider)
         : this.options.l1RpcProvider
+
+    if (
+      (await this.state.l1RpcProvider.getNetwork()).chainId !==
+      this.options.l1ChainId
+    ) {
+      throw new Error(
+        'Connected L1 network chain ID does not match provided L1 chain ID'
+      )
+    }
 
     this.logger.info('Using AddressManager', {
       addressManager: this.options.addressManager,
