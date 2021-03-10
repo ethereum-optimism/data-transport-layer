@@ -33,6 +33,7 @@
     "dotenv": "^8.2.0",
     "ethers": "^5.0.26",
     "express": "^4.17.1",
+    "express-pino-logger": "^6.0.0",
     "level": "^6.0.1",
     "levelup": "^4.4.0",
     "node-fetch": "^2.6.1"
