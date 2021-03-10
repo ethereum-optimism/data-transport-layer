@@ -8,7 +8,6 @@ import {
   TxType,
   ZERO_ADDRESS,
 } from '@eth-optimism/core-utils'
-import { Transaction } from 'ethereumjs-tx'
 
 /* Imports: Internal */
 import {
@@ -257,7 +256,7 @@ const maybeDecodeSequencerBatchTransaction = (
   try {
     // Try to decode as RLP first. This function will throw if the transaction can't be properly
     // decoded as RLP and we'll get bumped down to the next set of possible decodings.
-    const decodedTx = new Transaction(transaction)
+    const decodedTx = ethers.utils.parseTransaction(transaction)
 
     return {
       type: 'EIP155',
