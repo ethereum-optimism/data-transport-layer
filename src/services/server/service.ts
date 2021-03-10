@@ -2,6 +2,7 @@
 import { BaseService } from '@eth-optimism/service-base'
 import express, { Request, Response } from 'express'
 import cors from 'cors'
+import expressPinoLogger from 'express-pino-logger'
 import { BigNumber } from 'ethers'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { LevelUp } from 'levelup'
@@ -98,6 +99,9 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     // TODO: Maybe pass this in as a parameter instead of creating it here?
     this.state.app = express()
     this.state.app.use(cors())
+    this.state.app.use(expressPinoLogger({
+      logger: this.logger.inner
+    }))
     this._registerAllRoutes()
   }
 
@@ -118,11 +122,6 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
 
     this.state.app[method](route, async (req, res) => {
       try {
-        this.logger.info('Request received', {
-          ip: req.ip,
-          method: method.toUpperCase(),
-          path: req.path,
-        })
         return res.json(await handler(req, res))
       } catch (e) {
         return res.status(400).json({
