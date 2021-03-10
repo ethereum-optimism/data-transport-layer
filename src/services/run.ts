@@ -36,7 +36,7 @@ interface Bcfg {
         false
       ),
       l2RpcProvider: config.str('l2RpcEndpoint'),
-      l2ChainId: config.uint('l2ChainId', 69),
+      l2ChainId: config.uint('l2ChainId'),
       syncFromL1: config.bool('syncFromL1', true),
       syncFromL2: config.bool('syncFromL2', false),
       showUnconfirmedTransactions: config.bool('syncFromL2', false),
