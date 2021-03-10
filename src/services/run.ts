@@ -26,7 +26,7 @@ interface Bcfg {
       dbPath: config.str('dbPath', './db'),
       port: config.uint('serverPort', 7878),
       hostname: config.str('serverHostname', 'localhost'),
-      confirmations: config.uint('confirmations'),
+      confirmations: config.uint('confirmations', 35),
       l1RpcProvider: config.str('l1RpcEndpoint'),
       addressManager: config.str('addressManager'),
       pollingInterval: config.uint('pollingInterval', 5000),

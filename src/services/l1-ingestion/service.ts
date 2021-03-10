@@ -40,7 +40,7 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
       validate: validators.isAddress,
     },
     confirmations: {
-      default: 12,
+      default: 35,
       validate: validators.isInteger,
     },
     pollingInterval: {
