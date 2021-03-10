@@ -27,7 +27,6 @@ interface Bcfg {
       port: config.uint('serverPort', 7878),
       hostname: config.str('serverHostname', 'localhost'),
       confirmations: config.uint('confirmations', 12),
-      l1RpcProvider: config.str('l1RpcEndpoint'),
       addressManager: config.str('addressManager'),
       pollingInterval: config.uint('pollingInterval', 5000),
       logsPerPollingInterval: config.uint('logsPerPollingInterval', 2000),
@@ -35,7 +34,9 @@ interface Bcfg {
         'dangerouslyCatchAllErrors',
         false
       ),
+      l1RpcProvider: config.str('l1RpcEndpoint'),
       l2RpcProvider: config.str('l2RpcEndpoint'),
+      l1ChainId: config.uint('l1ChainId'),
       l2ChainId: config.uint('l2ChainId', 69),
       syncFromL1: config.bool('syncFromL1', true),
       syncFromL2: config.bool('syncFromL2', false),
