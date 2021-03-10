@@ -1,11 +1,11 @@
-import { BigNumber } from 'ethers'
-
+import { BIG_NUMBER_ZERO } from '../../../consts'
 import { expect } from '../../../../setup'
 import {
+  SequencerBatchAppendedExtraData,
   validateBatchTransaction,
   handleEventsSequencerBatchAppended,
 } from '../../../../../src/services/l1-ingestion/handlers/sequencer-batch-appended'
-import { l1TransactionData } from '../examples/l1-data'
+import { l1TransactionData } from '../../../examples/l1-data'
 
 describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended', () => {
   describe('validateBatchTransaction', () => {
@@ -115,18 +115,30 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
     })
   })
 
-  describe.only('handleEventsSequencerBatchAppended.parseEvent', () => {
+  describe('handleEventsSequencerBatchAppended.parseEvent', () => {
+    // This tests the behavior of parsing a real mainnet transaction,
+    // so it will break if the encoding scheme changes.
     it('should correctly parse a mainnet transaction', async () => {
-      const input1: [any, any] = [
-        { args: { _startingQueueIndex: BigNumber.from('0') } },
+      const input1: [any, SequencerBatchAppendedExtraData] = [
+        {
+          args: {
+            _startingQueueIndex: BIG_NUMBER_ZERO,
+            _numQueueElements: BIG_NUMBER_ZERO,
+            _totalElements: BIG_NUMBER_ZERO,
+          },
+        },
         {
           l1TransactionData,
-          gasLimit: '0',
-          prevTotalElements: BigNumber.from('0'),
-          batchIndex: BigNumber.from('0'),
-          batchSize: BigNumber.from('0'),
-          timestamp: BigNumber.from('0'),
-          blockNumber: BigNumber.from('11969713'),
+          timestamp: 0,
+          blockNumber: 0,
+          submitter: '',
+          l1TransactionHash: '',
+          gasLimit: 0,
+          prevTotalElements: BIG_NUMBER_ZERO,
+          batchIndex: BIG_NUMBER_ZERO,
+          batchSize: BIG_NUMBER_ZERO,
+          batchRoot: '',
+          batchExtraData: '',
         },
       ]
 
@@ -134,7 +146,44 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
         ...input1
       )
 
-      expect(output1.transactionEntries).to.have.length(101)
+      // Expected results based on mainnet data
+      // Source: https://ethtx.info/mainnet/0x6effe006836b841205ace4d99d7ae1b74ee96aac499a3f358b97fccd32ee9af2
+      const txEntries = output1.transactionEntries
+      expect(txEntries).to.have.length(101)
+      expect(txEntries.every((t) => t.queueOrigin === 'sequencer' || 'l1')).to
+        .be.true
+    })
+
+    // should throw an error on malformed data?
+    it('should error on malformed transaction data', async () => {
+      const input1: [any, SequencerBatchAppendedExtraData] = [
+        {
+          args: {
+            _startingQueueIndex: BIG_NUMBER_ZERO,
+            _numQueueElements: BIG_NUMBER_ZERO,
+            _totalElements: BIG_NUMBER_ZERO,
+          },
+        },
+        {
+          l1TransactionData: '0xgibberish',
+          timestamp: 0,
+          blockNumber: 0,
+          submitter: '',
+          l1TransactionHash: '',
+          gasLimit: 0,
+          prevTotalElements: BIG_NUMBER_ZERO,
+          batchIndex: BIG_NUMBER_ZERO,
+          batchSize: BIG_NUMBER_ZERO,
+          batchRoot: '',
+          batchExtraData: '',
+        },
+      ]
+
+      // TODO(annie): define the type of behavior we expect here!
+
+      // expect(async () => { await handleEventsSequencerBatchAppended.parseEvent(
+      //   ...input1
+      // )} ).to.throw()
     })
   })
 })

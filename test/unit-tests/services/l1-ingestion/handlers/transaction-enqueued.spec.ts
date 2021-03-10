@@ -1,10 +1,8 @@
-import { expect } from '../../../../setup'
-
-import { handleEventsTransactionEnqueued } from '../../../../../src/services/l1-ingestion/handlers/transaction-enqueued'
 import { BigNumber } from 'ethers'
 
-const MAX_ITERATIONS = 128
-const BIG_NUMBER_ZERO = BigNumber.from(0)
+import { MAX_ITERATIONS, BIG_NUMBER_ZERO } from '../../../consts'
+import { expect } from '../../../../setup'
+import { handleEventsTransactionEnqueued } from '../../../../../src/services/l1-ingestion/handlers/transaction-enqueued'
 
 describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', () => {
   describe('getExtraData', () => {
