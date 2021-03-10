@@ -30,7 +30,6 @@ interface Bcfg {
       l1RpcProvider: config.str('l1RpcEndpoint'),
       addressManager: config.str('addressManager'),
       pollingInterval: config.uint('pollingInterval', 5000),
-      logsPerPollingInterval: config.uint('logsPerPollingInterval', 2000),
       dangerouslyCatchAllErrors: config.bool(
         'dangerouslyCatchAllErrors',
         false
@@ -40,8 +39,12 @@ interface Bcfg {
       syncFromL1: config.bool('syncFromL1', true),
       syncFromL2: config.bool('syncFromL2', false),
       showUnconfirmedTransactions: config.bool('syncFromL2', false),
-      transactionsPerPollingInterval: config.uint(
-        'transactionsPerPollingInterval',
+      l1BlocksPerPollingInterval: config.uint(
+        'l1BlocksPerPollingInterval',
+        2000
+      ),
+      l2BlocksPerPollingInterval: config.uint(
+        'l2BlocksPerPollingInterval',
         1000
       ),
       legacySequencerCompatibility: config.bool(

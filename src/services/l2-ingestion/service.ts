@@ -35,7 +35,7 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
       default: 5000,
       validate: validators.isInteger,
     },
-    transactionsPerPollingInterval: {
+    l2BlocksPerPollingInterval: {
       default: 1000,
       validate: validators.isInteger,
     },
@@ -110,8 +110,7 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
 
         // Make sure we don't exceed the tip.
         const targetL2Block = Math.min(
-          highestSyncedL2BlockNumber +
-            this.options.transactionsPerPollingInterval,
+          highestSyncedL2BlockNumber + this.options.l2BlocksPerPollingInterval,
           currentL2Block
         )
 
@@ -137,7 +136,7 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
 
         if (
           currentL2Block - highestSyncedL2BlockNumber <
-          this.options.transactionsPerPollingInterval
+          this.options.l2BlocksPerPollingInterval
         ) {
           await sleep(this.options.pollingInterval)
         }
