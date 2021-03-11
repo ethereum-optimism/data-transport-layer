@@ -17,10 +17,7 @@ import {
   TransactionEntry,
   EventHandlerSet,
 } from '../../../types'
-import {
-  SEQUENCER_ENTRYPOINT_ADDRESS,
-  SEQUENCER_GAS_LIMIT,
-} from '../../../utils'
+import { SEQUENCER_ENTRYPOINT_ADDRESS } from '../../../utils'
 
 export const handleEventsSequencerBatchAppended: EventHandlerSet<
   EventArgsSequencerBatchAppended,
@@ -44,7 +41,7 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
     transactionEntries: TransactionEntry[]
   }
 > = {
-  getExtraData: async (event, l1RpcProvider) => {
+  getExtraData: async (event, l1RpcProvider, gasLimit) => {
     const l1Transaction = await event.getTransaction()
     const eventBlock = await event.getBlock()
 
@@ -84,7 +81,7 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
       submitter: l1Transaction.from,
       l1TransactionHash: l1Transaction.hash,
       l1TransactionData: l1Transaction.data,
-      gasLimit: SEQUENCER_GAS_LIMIT,
+      gasLimit: gasLimit,
 
       prevTotalElements: batchSubmissionEvent.args._prevTotalElements,
       batchIndex: batchSubmissionEvent.args._batchIndex,

@@ -67,6 +67,7 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
     contracts: OptimismContracts
     l1RpcProvider: JsonRpcProvider
     startingL1BlockNumber: number
+    gasLimit: number
   } = {} as any
 
   protected async _init(): Promise<void> {
@@ -115,6 +116,8 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
       this.state.l1RpcProvider,
       this.options.addressManager
     )
+
+    this.state.gasLimit = await this.state.contracts.OVM_ExecutionManager.getMaxTransactionGasLimit()
 
     const startingL1BlockNumber = await this.state.db.getStartingL1Block()
     if (startingL1BlockNumber) {
@@ -292,7 +295,8 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
         for (const event of events) {
           const extraData = await handlers.getExtraData(
             event,
-            this.state.l1RpcProvider
+            this.state.l1RpcProvider,
+            this.state.gasLimit
           )
           const parsedEvent = await handlers.parseEvent(event, extraData)
           await handlers.storeEvent(parsedEvent, this.state.db)
