@@ -17,6 +17,7 @@
     "lint:fix": "yarn run lint:fix:typescript",
     "lint:fix:typescript": "prettier --config prettier-config.json --write \"{src,exec,test}/**/*.ts\"",
     "start": "ts-node ./src/services/run.ts",
+    "start:local": "ts-node ./src/services/run.ts | pino-pretty -i req,res,responseTime",
     "test": "hardhat --config test/config/hardhat.config.ts test",
     "build": "tsc -p ."
   },
@@ -47,6 +48,7 @@
     "@types/node-fetch": "^2.5.8",
     "@types/rimraf": "^3.0.0",
     "hardhat": "^2.0.9",
+    "pino-pretty": "^4.7.1",
     "rimraf": "^3.0.2",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.3"
