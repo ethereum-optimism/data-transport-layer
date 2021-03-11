@@ -4,7 +4,8 @@ import { TypedEthersEvent } from './event-types'
 
 export type GetExtraDataHandler<TEventArgs, TExtraData> = (
   event?: TypedEthersEvent<TEventArgs>,
-  l1RpcProvider?: JsonRpcProvider
+  l1RpcProvider?: JsonRpcProvider,
+  gasLimit?: number
 ) => Promise<TExtraData>
 
 export type ParseEventHandler<TEventArgs, TExtraData, TParsedEvent> = (
