@@ -17,7 +17,7 @@
     "lint:fix": "yarn run lint:fix:typescript",
     "lint:fix:typescript": "prettier --config prettier-config.json --write \"{src,exec,test}/**/*.ts\"",
     "start": "ts-node ./src/services/run.ts",
-    "start:local": "ts-node ./src/services/run.ts | pino-pretty -i req,res,responseTime",
+    "start:local": "yarn start | pino-pretty -i res | egrep -v 'remoteAddress|remotePort|headers|host|user-agent|accept|}'",
     "test": "hardhat --config test/config/hardhat.config.ts test",
     "build": "tsc -p ."
   },
