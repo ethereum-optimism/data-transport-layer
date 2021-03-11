@@ -62,7 +62,6 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
   } = {} as any
 
   protected async _init(): Promise<void> {
-    // TODO: I don't know if this is strictly necessary, but it's probably a good thing to do.
     if (!this.options.db.isOpen()) {
       await this.options.db.open()
     }
@@ -100,9 +99,6 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     // TODO: Maybe pass this in as a parameter instead of creating it here?
     this.state.app = express()
     this.state.app.use(cors())
-    this.state.app.use(expressPinoLogger({
-      logger: this.logger.inner
-    }))
     this._registerAllRoutes()
   }
 
@@ -122,9 +118,26 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     // TODO: Add a different function to allow for removing routes.
 
     this.state.app[method](route, async (req, res) => {
+      const start = Date.now()
       try {
-        return res.json(await handler(req, res))
+        const json = await handler(req, res)
+        const elapsed = new Date().getTime() - start
+        this.logger.info('Served HTTP Request', {
+          method: req.method,
+          url: req.url,
+          query: req.query,
+          elapsed,
+        })
+        return res.json(json)
       } catch (e) {
+        const elapsed = Date.now() - start
+        this.logger.info('Failed HTTP Request', {
+          method: req.method,
+          url: req.url,
+          query: req.query,
+          elapsed,
+          msg: e.toString()
+        })
         return res.status(400).json({
           error: e.toString(),
         })
@@ -139,6 +152,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
   private _registerAllRoutes(): void {
     // TODO: Maybe add doc-like comments to each of these routes?
 
+    // TODO: this needs a backend argument
     this._registerRoute(
       'get',
       '/eth/syncing',
@@ -295,21 +309,19 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     this._registerRoute(
       'get',
       '/transaction/latest',
-      async (): Promise<TransactionResponse> => {
-        let transaction = await this.state.db.getLatestFullTransaction()
-        if (this.options.showUnconfirmedTransactions) {
-          const latestUnconfirmedTx = await this.state.db.getLatestUnconfirmedTransaction()
-          if (
-            transaction === null ||
-            transaction === undefined ||
-            latestUnconfirmedTx.index >= transaction.index
-          ) {
-            transaction = latestUnconfirmedTx
-          }
-        }
+      async (req): Promise<TransactionResponse> => {
+        const backend = req.query.backend || 'l1'
+        let transaction = null
 
-        if (transaction === null) {
-          transaction = await this.state.db.getLatestFullTransaction()
+        switch (backend) {
+          case 'l1':
+            transaction = await this.state.db.getLatestFullTransaction()
+              break
+          case 'l2':
+            transaction = await this.state.db.getLatestUnconfirmedTransaction()
+            break
+          default:
+            throw new Error(`Unknown backend type ${backend}`)
         }
 
         if (transaction === null) {
@@ -334,17 +346,22 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       'get',
       '/transaction/index/:index',
       async (req): Promise<TransactionResponse> => {
+        const backend = req.query.backend || 'l1'
         let transaction = null
-        if (this.options.showUnconfirmedTransactions) {
-          transaction = await this.state.db.getUnconfirmedTransactionByIndex(
-            BigNumber.from(req.params.index).toNumber()
-          )
-        }
 
-        if (transaction === null) {
-          transaction = await this.state.db.getFullTransactionByIndex(
-            BigNumber.from(req.params.index).toNumber()
-          )
+        switch (backend) {
+          case 'l1':
+            transaction = await this.state.db.getFullTransactionByIndex(
+              BigNumber.from(req.params.index).toNumber()
+            )
+            break
+          case 'l2':
+            transaction = await this.state.db.getUnconfirmedTransactionByIndex(
+              BigNumber.from(req.params.index).toNumber()
+            )
+            break
+          default:
+            throw new Error(`Unknown backend type ${backend}`)
         }
 
         if (transaction === null) {
@@ -422,21 +439,19 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     this._registerRoute(
       'get',
       '/stateroot/latest',
-      async (): Promise<StateRootResponse> => {
-        let stateRoot = await this.state.db.getLatestStateRoot()
-        if (this.options.showUnconfirmedTransactions) {
-          const latestUnconfirmedStateRoot = await this.state.db.getLatestUnconfirmedStateRoot()
-          if (
-            stateRoot === null ||
-            stateRoot === undefined ||
-            latestUnconfirmedStateRoot.index >= stateRoot.index
-          ) {
-            stateRoot = latestUnconfirmedStateRoot
-          }
-        }
+      async (req): Promise<StateRootResponse> => {
+        const backend = req.query.backend || 'l1'
+        let stateRoot = null
 
-        if (stateRoot === null) {
-          stateRoot = await this.state.db.getLatestStateRoot()
+        switch (backend) {
+          case 'l1':
+            stateRoot = await this.state.db.getLatestStateRoot()
+            break
+          case 'l2':
+            stateRoot = await this.state.db.getLatestUnconfirmedStateRoot()
+            break
+          default:
+            throw new Error(`Unknown backend type ${backend}`)
         }
 
         if (stateRoot === null) {
@@ -461,17 +476,22 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       'get',
       '/stateroot/index/:index',
       async (req): Promise<StateRootResponse> => {
+        const backend = req.query.backend || 'l1'
         let stateRoot = null
-        if (this.options.showUnconfirmedTransactions) {
-          stateRoot = await this.state.db.getUnconfirmedStateRootByIndex(
-            BigNumber.from(req.params.index).toNumber()
-          )
-        }
 
-        if (stateRoot === null) {
-          stateRoot = await this.state.db.getStateRootByIndex(
-            BigNumber.from(req.params.index).toNumber()
-          )
+        switch (backend) {
+          case 'l1':
+            stateRoot = await this.state.db.getStateRootByIndex(
+              BigNumber.from(req.params.index).toNumber()
+            )
+            break
+          case 'l2':
+            stateRoot = await this.state.db.getUnconfirmedStateRootByIndex(
+              BigNumber.from(req.params.index).toNumber()
+            )
+            break
+          default:
+            throw new Error(`Unknown backend type ${backend}`)
         }
 
         if (stateRoot === null) {
