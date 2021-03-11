@@ -11,6 +11,7 @@ import { LevelUp } from 'levelup'
 import { TransportDB } from '../../db/transport-db'
 import {
   ContextResponse,
+  GasPriceResponse,
   EnqueueResponse,
   StateRootBatchResponse,
   StateRootResponse,
@@ -171,6 +172,18 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
             syncing: false,
             currentTransactionIndex: currentL2Block.index,
           }
+        }
+      }
+    )
+
+    this._registerRoute(
+      'get',
+      '/eth/gasprice',
+      async (): Promise<GasPriceResponse> => {
+        const gasPrice = await this.state.l1RpcProvider.getGasPrice()
+
+        return {
+          gasPrice: gasPrice.toString()
         }
       }
     )

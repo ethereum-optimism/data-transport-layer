@@ -36,6 +36,10 @@ export interface ContextResponse {
   blockHash: string
 }
 
+export interface GasPriceResponse {
+  gasPrice: string
+}
+
 export type SyncingResponse =
   | {
       syncing: true
