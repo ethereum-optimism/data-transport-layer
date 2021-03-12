@@ -22,7 +22,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
     // to test. We could add a lot more tests that guarantee the correctness of the provided input,
     // but it's probably better to get wider test coverage first.
 
-    it('should have a ctcIndex equal to null', async () => {
+    it('should have a ctcIndex equal to null', () => {
       const input1: [any, any] = [
         {
           blockNumber: 0,
@@ -35,7 +35,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
         null,
       ]
 
-      const output1 = await handleEventsTransactionEnqueued.parseEvent(
+      const output1 = handleEventsTransactionEnqueued.parseEvent(
         ...input1
       )
 
@@ -44,7 +44,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
       expect(output1).to.have.property('ctcIndex', expected1)
     })
 
-    it('should have a blockNumber equal to the integer value of the blockNumber parameter', async () => {
+    it('should have a blockNumber equal to the integer value of the blockNumber parameter', () => {
       for (
         let i = 0;
         i < Number.MAX_SAFE_INTEGER;
@@ -62,7 +62,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           null,
         ]
 
-        const output1 = await handleEventsTransactionEnqueued.parseEvent(
+        const output1 = handleEventsTransactionEnqueued.parseEvent(
           ...input1
         )
 
@@ -72,7 +72,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
       }
     })
 
-    it('should have an index equal to the integer value of the _queueIndex argument', async () => {
+    it('should have an index equal to the integer value of the _queueIndex argument', () => {
       for (
         let i = 0;
         i < Number.MAX_SAFE_INTEGER;
@@ -90,7 +90,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           null,
         ]
 
-        const output1 = await handleEventsTransactionEnqueued.parseEvent(
+        const output1 = handleEventsTransactionEnqueued.parseEvent(
           ...input1
         )
 
@@ -100,7 +100,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
       }
     })
 
-    it('should have a gasLimit equal to the integer value of the _gasLimit argument', async () => {
+    it('should have a gasLimit equal to the integer value of the _gasLimit argument', () => {
       for (
         let i = 0;
         i < Number.MAX_SAFE_INTEGER;
@@ -118,7 +118,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           null,
         ]
 
-        const output1 = await handleEventsTransactionEnqueued.parseEvent(
+        const output1 = handleEventsTransactionEnqueued.parseEvent(
           ...input1
         )
 
@@ -128,7 +128,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
       }
     })
 
-    it('should have a timestamp equal to the integer value of the _timestamp argument', async () => {
+    it('should have a timestamp equal to the integer value of the _timestamp argument', () => {
       for (
         let i = 0;
         i < Number.MAX_SAFE_INTEGER;
@@ -146,7 +146,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           null,
         ]
 
-        const output1 = await handleEventsTransactionEnqueued.parseEvent(
+        const output1 = handleEventsTransactionEnqueued.parseEvent(
           ...input1
         )
 

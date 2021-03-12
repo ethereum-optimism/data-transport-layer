@@ -14,7 +14,7 @@ export const handleEventsTransactionEnqueued: EventHandlerSet<
   getExtraData: async () => {
     return null
   },
-  parseEvent: async (event) => {
+  parseEvent: (event) => {
     return {
       index: event.args._queueIndex.toNumber(),
       target: event.args._target,
