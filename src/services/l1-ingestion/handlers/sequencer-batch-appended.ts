@@ -93,7 +93,7 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
       batchExtraData: batchSubmissionEvent.args._extraData,
     }
   },
-  parseEvent: async (event, extraData) => {
+  parseEvent: (event, extraData) => {
     const transactionEntries: TransactionEntry[] = []
 
     // It's easier to deal with this data if it's a Buffer.

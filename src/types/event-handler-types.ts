@@ -10,7 +10,7 @@ export type GetExtraDataHandler<TEventArgs, TExtraData> = (
 export type ParseEventHandler<TEventArgs, TExtraData, TParsedEvent> = (
   event: TypedEthersEvent<TEventArgs>,
   extraData: TExtraData
-) => Promise<TParsedEvent>
+) => TParsedEvent
 
 export type StoreEventHandler<TParsedEvent> = (
   parsedEvent: TParsedEvent,

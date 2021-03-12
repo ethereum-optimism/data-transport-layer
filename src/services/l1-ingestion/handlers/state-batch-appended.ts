@@ -36,7 +36,7 @@ export const handleEventsStateBatchAppended: EventHandlerSet<
       l1TransactionData: l1Transaction.data,
     }
   },
-  parseEvent: async (event, extraData) => {
+  parseEvent: (event, extraData) => {
     const stateRoots = getContractFactory(
       'OVM_StateCommitmentChain'
     ).interface.decodeFunctionData(
