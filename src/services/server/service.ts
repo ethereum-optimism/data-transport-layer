@@ -100,9 +100,11 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     // TODO: Maybe pass this in as a parameter instead of creating it here?
     this.state.app = express()
     this.state.app.use(cors())
-    this.state.app.use(expressPinoLogger({
-      logger: this.logger.inner
-    }))
+    this.state.app.use(
+      expressPinoLogger({
+        logger: this.logger.inner,
+      })
+    )
     this._registerAllRoutes()
   }
 
@@ -183,7 +185,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
         const gasPrice = await this.state.l1RpcProvider.getGasPrice()
 
         return {
-          gasPrice: gasPrice.toString()
+          gasPrice: gasPrice.toString(),
         }
       }
     )

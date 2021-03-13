@@ -35,9 +35,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
         null,
       ]
 
-      const output1 = handleEventsTransactionEnqueued.parseEvent(
-        ...input1
-      )
+      const output1 = handleEventsTransactionEnqueued.parseEvent(...input1)
 
       const expected1 = null
 
@@ -62,9 +60,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           null,
         ]
 
-        const output1 = handleEventsTransactionEnqueued.parseEvent(
-          ...input1
-        )
+        const output1 = handleEventsTransactionEnqueued.parseEvent(...input1)
 
         const expected1 = BigNumber.from(i).toNumber()
 
@@ -90,9 +86,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           null,
         ]
 
-        const output1 = handleEventsTransactionEnqueued.parseEvent(
-          ...input1
-        )
+        const output1 = handleEventsTransactionEnqueued.parseEvent(...input1)
 
         const expected1 = BigNumber.from(i).toNumber()
 
@@ -118,9 +112,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           null,
         ]
 
-        const output1 = handleEventsTransactionEnqueued.parseEvent(
-          ...input1
-        )
+        const output1 = handleEventsTransactionEnqueued.parseEvent(...input1)
 
         const expected1 = BigNumber.from(i).toNumber()
 
@@ -146,9 +138,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           null,
         ]
 
-        const output1 = handleEventsTransactionEnqueued.parseEvent(
-          ...input1
-        )
+        const output1 = handleEventsTransactionEnqueued.parseEvent(...input1)
 
         const expected1 = BigNumber.from(i).toNumber()
 
