@@ -1,8 +1,7 @@
 /* Imports: External */
-import { Contract, Signer } from 'ethers'
+import { constants, Contract, Signer } from 'ethers'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { getContractInterface } from '@eth-optimism/contracts/build/src/contract-defs'
-import { ZERO_ADDRESS } from '@eth-optimism/core-utils'
 
 export const loadContract = (
   name: string,
@@ -20,7 +19,7 @@ export const loadProxyFromManager = async (
 ): Promise<Contract> => {
   const address = await Lib_AddressManager.getAddress(proxy)
 
-  if (address === ZERO_ADDRESS) {
+  if (address === constants.AddressZero) {
     throw new Error(
       `Lib_AddressManager does not have a record for a contract named: ${proxy}`
     )
