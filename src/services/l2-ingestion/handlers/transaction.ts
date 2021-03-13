@@ -1,6 +1,6 @@
 /* Imports: External */
-import { ctcCoder, ZERO_ADDRESS } from '@eth-optimism/core-utils'
-import { BigNumber, ethers } from 'ethers'
+import { ctcCoder } from '@eth-optimism/core-utils'
+import { BigNumber, constants, ethers } from 'ethers'
 
 /* Imports: Internal */
 import { TransportDB } from '../../../db/transport-db'
@@ -50,7 +50,7 @@ export const handleSequencerBlock = {
         gasLimit: BigNumber.from(transaction.gas).toNumber(),
         gasPrice: BigNumber.from(transaction.gasPrice).toNumber(), // ?
         nonce: BigNumber.from(transaction.nonce).toNumber(),
-        target: transaction.to || ZERO_ADDRESS, // ?
+        target: transaction.to || constants.AddressZero, // ?
         data: transaction.input,
         type: transaction.txType,
       }

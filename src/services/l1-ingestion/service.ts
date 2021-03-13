@@ -1,6 +1,6 @@
 /* Imports: External */
 import { BaseService } from '@eth-optimism/service-base'
-import { fromHexString, ZERO_ADDRESS } from '@eth-optimism/core-utils'
+import { fromHexString } from '@eth-optimism/core-utils'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import colors from 'colors/safe'
 import { LevelUp } from 'levelup'
@@ -23,6 +23,7 @@ import { handleEventsTransactionEnqueued } from './handlers/transaction-enqueued
 import { handleEventsSequencerBatchAppended } from './handlers/sequencer-batch-appended'
 import { handleEventsStateBatchAppended } from './handlers/state-batch-appended'
 import { L1DataTransportServiceOptions } from '../main/service'
+import { constants } from 'ethers'
 
 export interface L1IngestionServiceOptions
   extends L1DataTransportServiceOptions {
@@ -336,7 +337,7 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
         ._newAddress
     } else {
       // Address wasn't set before this.
-      return ZERO_ADDRESS
+      return constants.AddressZero
     }
   }
 
