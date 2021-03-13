@@ -3,8 +3,8 @@ import { BigNumber, ethers } from 'ethers'
 import { getContractFactory } from '@eth-optimism/contracts'
 import {
   ctcCoder,
-  toHexString,
   fromHexString,
+  toHexString,
   TxType,
   ZERO_ADDRESS,
   decodeAppendSequencerBatch,
@@ -95,7 +95,9 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
     }
   },
   parseEvent: (event, extraData) => {
-    // It's easier to deal with this data if it's a Buffer.
+    // Follows the spec at:
+    // https://github.com/ethereum-optimism/specs/blob/main/l2-geth/l1-data-indexer.md
+
     const params = decodeAppendSequencerBatch(extraData.l1TransactionData)
 
     let sequencerTransactionCount = 0
