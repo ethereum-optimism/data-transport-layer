@@ -3,10 +3,11 @@ import { BigNumber, ethers } from 'ethers'
 import { getContractFactory } from '@eth-optimism/contracts'
 import {
   ctcCoder,
-  fromHexString,
   toHexString,
+  fromHexString,
   TxType,
   ZERO_ADDRESS,
+  decodeAppendSequencerBatch,
 } from '@eth-optimism/core-utils'
 
 /* Imports: Internal */
@@ -94,32 +95,26 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
     }
   },
   parseEvent: (event, extraData) => {
-    const transactionEntries: TransactionEntry[] = []
-
     // It's easier to deal with this data if it's a Buffer.
-    const calldata = fromHexString(extraData.l1TransactionData)
+    const params = decodeAppendSequencerBatch(extraData.l1TransactionData)
 
-    const numContexts = BigNumber.from(calldata.slice(12, 15)).toNumber()
-    let transactionIndex = 0
-    let enqueuedCount = 0
-    let nextTxPointer = 15 + 16 * numContexts
-    for (let i = 0; i < numContexts; i++) {
-      const contextPointer = 15 + 16 * i
-      const context = parseSequencerBatchContext(calldata, contextPointer)
-
-      for (let j = 0; j < context.numSequencedTransactions; j++) {
-        const sequencerTransaction = parseSequencerBatchTransaction(
-          calldata,
-          nextTxPointer
-        )
+    let sequencerTransactionCount = 0
+    let queueTransactionCount = 0
+    const transactionEntries: TransactionEntry[] = []
+    for (const context of params.contexts) {
+      for (let i = 0; i < context.numSequencedTransactions; i++) {
+        const sequencerTransaction =
+          params.transactions[sequencerTransactionCount]
 
         const { decoded, type } = maybeDecodeSequencerBatchTransaction(
-          sequencerTransaction
+          fromHexString(sequencerTransaction)
         )
 
         transactionEntries.push({
           index: extraData.prevTotalElements
-            .add(BigNumber.from(transactionIndex))
+            .add(
+              BigNumber.from(sequencerTransactionCount + queueTransactionCount)
+            )
             .toNumber(),
           batchIndex: extraData.batchIndex.toNumber(),
           blockNumber: BigNumber.from(context.blockNumber).toNumber(),
@@ -135,13 +130,12 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
           confirmed: true,
         })
 
-        nextTxPointer += 3 + sequencerTransaction.length
-        transactionIndex++
+        sequencerTransactionCount += 1
       }
 
-      for (let j = 0; j < context.numSubsequentQueueTransactions; j++) {
+      for (let i = 0; i < context.numSubsequentQueueTransactions; i++) {
         const queueIndex = event.args._startingQueueIndex.add(
-          BigNumber.from(enqueuedCount)
+          BigNumber.from(queueTransactionCount)
         )
 
         // Okay, so. Since events are processed in parallel, we don't know if the Enqueue
@@ -151,7 +145,9 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
         // "dummy" fields.
         transactionEntries.push({
           index: extraData.prevTotalElements
-            .add(BigNumber.from(transactionIndex))
+            .add(
+              BigNumber.from(sequencerTransactionCount + queueTransactionCount)
+            )
             .toNumber(),
           batchIndex: extraData.batchIndex.toNumber(),
           blockNumber: BigNumber.from(0).toNumber(),
@@ -167,8 +163,7 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
           confirmed: true,
         })
 
-        enqueuedCount++
-        transactionIndex++
+        queueTransactionCount += 1
       }
     }
 
@@ -204,44 +199,6 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
       }
     }
   },
-}
-
-interface SequencerBatchContext {
-  numSequencedTransactions: number
-  numSubsequentQueueTransactions: number
-  timestamp: number
-  blockNumber: number
-}
-
-const parseSequencerBatchContext = (
-  calldata: Buffer,
-  offset: number
-): SequencerBatchContext => {
-  return {
-    numSequencedTransactions: BigNumber.from(
-      calldata.slice(offset, offset + 3)
-    ).toNumber(),
-    numSubsequentQueueTransactions: BigNumber.from(
-      calldata.slice(offset + 3, offset + 6)
-    ).toNumber(),
-    timestamp: BigNumber.from(
-      calldata.slice(offset + 6, offset + 11)
-    ).toNumber(),
-    blockNumber: BigNumber.from(
-      calldata.slice(offset + 11, offset + 16)
-    ).toNumber(),
-  }
-}
-
-const parseSequencerBatchTransaction = (
-  calldata: Buffer,
-  offset: number
-): Buffer => {
-  const transactionLength = BigNumber.from(
-    calldata.slice(offset, offset + 3)
-  ).toNumber()
-
-  return calldata.slice(offset + 3, offset + 3 + transactionLength)
 }
 
 const maybeDecodeSequencerBatchTransaction = (
