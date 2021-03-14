@@ -10,6 +10,7 @@ import {
 } from '@eth-optimism/core-utils'
 
 /* Imports: Internal */
+import { getSwapTransaction } from './get-tx'
 import {
   DecodedSequencerBatchTransaction,
   EventArgsSequencerBatchAppended,
@@ -117,7 +118,7 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
           sequencerTransaction
         )
 
-        transactionEntries.push({
+        const transactionEntry: TransactionEntry = getSwapTransaction({
           index: extraData.prevTotalElements
             .add(BigNumber.from(transactionIndex))
             .toNumber(),
@@ -135,6 +136,8 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
           confirmed: true,
         })
 
+        transactionEntries.push(transactionEntry)
+
         nextTxPointer += 3 + sequencerTransaction.length
         transactionIndex++
       }
@@ -149,7 +152,7 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
         // the api to fetch that data for itself later on and we use fake values for some
         // fields. The real TODO here is to make sure we fix this data structure to avoid ugly
         // "dummy" fields.
-        transactionEntries.push({
+        const transactionEntry: TransactionEntry = getSwapTransaction({
           index: extraData.prevTotalElements
             .add(BigNumber.from(transactionIndex))
             .toNumber(),
@@ -166,6 +169,7 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
           decoded: null,
           confirmed: true,
         })
+        transactionEntries.push(transactionEntry)
 
         enqueuedCount++
         transactionIndex++
