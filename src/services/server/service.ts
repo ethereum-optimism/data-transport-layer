@@ -194,7 +194,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
         const gasPrice = await this.state.l1RpcProvider.getGasPrice()
 
         return {
-          gasPrice: gasPrice.toString()
+          gasPrice: gasPrice.toString(),
         }
       }
     )

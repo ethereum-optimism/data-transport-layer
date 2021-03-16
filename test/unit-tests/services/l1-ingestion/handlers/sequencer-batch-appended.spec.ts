@@ -154,7 +154,6 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
         .be.true
     })
 
-    // should throw an error on malformed data?
     it('should error on malformed transaction data', async () => {
       const input1: [any, SequencerBatchAppendedExtraData] = [
         {
@@ -179,11 +178,8 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
         },
       ]
 
-      // TODO(annie): define the type of behavior we expect here!
-
-      // expect(async () => { await handleEventsSequencerBatchAppended.parseEvent(
-      //   ...input1
-      // )} ).to.throw()
+      expect(handleEventsSequencerBatchAppended.parseEvent(...input1)).to.be
+        .rejected
     })
   })
 })

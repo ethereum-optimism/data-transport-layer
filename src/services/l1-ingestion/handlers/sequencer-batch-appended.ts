@@ -102,6 +102,12 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
 
     // It's easier to deal with this data if it's a Buffer.
     const calldata = fromHexString(extraData.l1TransactionData)
+
+    if (calldata.length < 12) {
+      throw new Error(
+        `Block ${extraData.blockNumber} transaction data is invalid for decoding: ${extraData.l1TransactionData}`
+      )
+    }
     const numContexts = BigNumber.from(calldata.slice(12, 15)).toNumber()
     let transactionIndex = 0
     let enqueuedCount = 0
