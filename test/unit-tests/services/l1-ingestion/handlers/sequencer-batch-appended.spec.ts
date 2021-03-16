@@ -178,7 +178,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
         },
       ]
 
-      await expect(handleEventsSequencerBatchAppended.parseEvent(...input1)).to
+      return expect(handleEventsSequencerBatchAppended.parseEvent(...input1)).to
         .eventually.be.rejected
     })
   })
