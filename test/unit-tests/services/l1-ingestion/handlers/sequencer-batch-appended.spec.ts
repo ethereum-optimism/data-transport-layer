@@ -178,8 +178,11 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
         },
       ]
 
-      return expect(handleEventsSequencerBatchAppended.parseEvent(...input1)).to
-        .eventually.be.rejected
+      await expect(
+        handleEventsSequencerBatchAppended.parseEvent(...input1)
+      ).to.eventually.be.rejectedWith(
+        `Block ${input1[1].blockNumber} transaction data is invalid for decoding: ${input1[1].l1TransactionData}`
+      )
     })
   })
 })
