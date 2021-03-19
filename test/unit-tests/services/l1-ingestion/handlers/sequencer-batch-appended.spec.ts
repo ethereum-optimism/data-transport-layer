@@ -1,4 +1,4 @@
-import { BIG_NUMBER_ZERO } from '../../../consts'
+import { ethers } from 'ethers'
 import { expect } from '../../../../setup'
 import {
   SequencerBatchAppendedExtraData,
@@ -122,9 +122,9 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
       const input1: [any, SequencerBatchAppendedExtraData] = [
         {
           args: {
-            _startingQueueIndex: BIG_NUMBER_ZERO,
-            _numQueueElements: BIG_NUMBER_ZERO,
-            _totalElements: BIG_NUMBER_ZERO,
+            _startingQueueIndex: ethers.constants.Zero,
+            _numQueueElements: ethers.constants.Zero,
+            _totalElements: ethers.constants.Zero,
           },
         },
         {
@@ -134,9 +134,9 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
           submitter: '',
           l1TransactionHash: '',
           gasLimit: 0,
-          prevTotalElements: BIG_NUMBER_ZERO,
-          batchIndex: BIG_NUMBER_ZERO,
-          batchSize: BIG_NUMBER_ZERO,
+          prevTotalElements: ethers.constants.Zero,
+          batchIndex: ethers.constants.Zero,
+          batchSize: ethers.constants.Zero,
           batchRoot: '',
           batchExtraData: '',
         },
@@ -158,9 +158,9 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
       const input1: [any, SequencerBatchAppendedExtraData] = [
         {
           args: {
-            _startingQueueIndex: BIG_NUMBER_ZERO,
-            _numQueueElements: BIG_NUMBER_ZERO,
-            _totalElements: BIG_NUMBER_ZERO,
+            _startingQueueIndex: ethers.constants.Zero,
+            _numQueueElements: ethers.constants.Zero,
+            _totalElements: ethers.constants.Zero,
           },
         },
         {
@@ -170,9 +170,9 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
           submitter: '',
           l1TransactionHash: '',
           gasLimit: 0,
-          prevTotalElements: BIG_NUMBER_ZERO,
-          batchIndex: BIG_NUMBER_ZERO,
-          batchSize: BIG_NUMBER_ZERO,
+          prevTotalElements: ethers.constants.Zero,
+          batchIndex: ethers.constants.Zero,
+          batchSize: ethers.constants.Zero,
           batchRoot: '',
           batchExtraData: '',
         },
@@ -181,7 +181,8 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
       expect(() => {
         handleEventsSequencerBatchAppended.parseEvent(...input1)
       }).to.throw(
-        `Block ${input1[1].blockNumber} transaction data is invalid for decoding: ${input1[1].l1TransactionData}`
+        `Block ${input1[1].blockNumber} transaction data is invalid for decoding: ${input1[1].l1TransactionData} , ` +
+          `converted buffer length is < 12.`
       )
     })
   })

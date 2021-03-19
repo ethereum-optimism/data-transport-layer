@@ -105,7 +105,8 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
 
     if (calldata.length < 12) {
       throw new Error(
-        `Block ${extraData.blockNumber} transaction data is invalid for decoding: ${extraData.l1TransactionData}`
+        `Block ${extraData.blockNumber} transaction data is invalid for decoding: ${extraData.l1TransactionData} , ` +
+          `converted buffer length is < 12.`
       )
     }
     const numContexts = BigNumber.from(calldata.slice(12, 15)).toNumber()
