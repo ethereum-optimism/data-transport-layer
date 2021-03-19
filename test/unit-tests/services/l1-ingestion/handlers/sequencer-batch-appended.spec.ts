@@ -178,9 +178,9 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
         },
       ]
 
-      await expect(
+      expect(() => {
         handleEventsSequencerBatchAppended.parseEvent(...input1)
-      ).to.eventually.be.rejectedWith(
+      }).to.throw(
         `Block ${input1[1].blockNumber} transaction data is invalid for decoding: ${input1[1].l1TransactionData}`
       )
     })
