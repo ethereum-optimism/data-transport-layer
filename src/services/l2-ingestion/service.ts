@@ -47,10 +47,6 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
       default: false,
       validate: validators.isBoolean,
     },
-    stopL2SyncAtBlock: {
-      default: Infinity,
-      validate: validators.isInteger,
-    },
   }
 
   private state: {
@@ -79,34 +75,11 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
         const highestSyncedL2BlockNumber =
           (await this.state.db.getHighestSyncedUnconfirmedBlock()) || 1
 
-        // Shut down if we're at the stop block.
-        if (
-          this.options.stopL2SyncAtBlock !== undefined &&
-          this.options.stopL2SyncAtBlock !== null &&
-          highestSyncedL2BlockNumber >= this.options.stopL2SyncAtBlock
-        ) {
-          this.logger.info(
-            "L2 sync is shutting down because we've reached your target block. Goodbye!"
-          )
-          return
-        }
-
         // Subtract one to account for the CTC being zero indexed
-        let currentL2Block = Math.max(
+        const currentL2Block = Math.max(
           (await this.state.l2RpcProvider.getBlockNumber()) - 1,
           0
         )
-
-        // Make sure we can't exceed the stop block.
-        if (
-          this.options.stopL2SyncAtBlock !== undefined &&
-          this.options.stopL2SyncAtBlock !== null
-        ) {
-          currentL2Block = Math.min(
-            currentL2Block,
-            this.options.stopL2SyncAtBlock
-          )
-        }
 
         // Make sure we don't exceed the tip.
         const targetL2Block = Math.min(
