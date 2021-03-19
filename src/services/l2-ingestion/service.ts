@@ -91,11 +91,7 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
           return
         }
 
-        // Subtract one to account for the CTC being zero indexed
-        let currentL2Block = Math.max(
-          (await this.state.l2RpcProvider.getBlockNumber()) - 1,
-          0
-        )
+        let currentL2Block = await this.state.l2RpcProvider.getBlockNumber()
 
         // Make sure we can't exceed the stop block.
         if (
