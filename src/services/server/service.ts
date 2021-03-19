@@ -125,7 +125,6 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
         this.logger.info('Served HTTP Request', {
           method: req.method,
           url: req.url,
-          query: req.query,
           elapsed,
         })
         return res.json(json)
@@ -134,7 +133,6 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
         this.logger.info('Failed HTTP Request', {
           method: req.method,
           url: req.url,
-          query: req.query,
           elapsed,
           msg: e.toString()
         })
