@@ -75,11 +75,7 @@ export class L2IngestionService extends BaseService<L2IngestionServiceOptions> {
         const highestSyncedL2BlockNumber =
           (await this.state.db.getHighestSyncedUnconfirmedBlock()) || 1
 
-        // Subtract one to account for the CTC being zero indexed
-        const currentL2Block = Math.max(
-          (await this.state.l2RpcProvider.getBlockNumber()) - 1,
-          0
-        )
+        const currentL2Block = await this.state.l2RpcProvider.getBlockNumber()
 
         // Make sure we don't exceed the tip.
         const targetL2Block = Math.min(
