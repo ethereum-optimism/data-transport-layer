@@ -2,7 +2,6 @@
 import { BaseService } from '@eth-optimism/service-base'
 import express, { Request, Response } from 'express'
 import cors from 'cors'
-import expressPinoLogger from 'express-pino-logger'
 import { BigNumber } from 'ethers'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { LevelUp } from 'levelup'
@@ -100,9 +99,6 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     // TODO: Maybe pass this in as a parameter instead of creating it here?
     this.state.app = express()
     this.state.app.use(cors())
-    this.state.app.use(expressPinoLogger({
-      logger: this.logger.inner
-    }))
     this._registerAllRoutes()
   }
 
@@ -122,9 +118,24 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
     // TODO: Add a different function to allow for removing routes.
 
     this.state.app[method](route, async (req, res) => {
+      const start = Date.now()
       try {
-        return res.json(await handler(req, res))
+        const json = await handler(req, res)
+        const elapsed = Date.now() - start
+        this.logger.info('Served HTTP Request', {
+          method: req.method,
+          url: req.url,
+          elapsed,
+        })
+        return res.json(json)
       } catch (e) {
+        const elapsed = Date.now() - start
+        this.logger.info('Failed HTTP Request', {
+          method: req.method,
+          url: req.url,
+          elapsed,
+          msg: e.toString()
+        })
         return res.status(400).json({
           error: e.toString(),
         })
