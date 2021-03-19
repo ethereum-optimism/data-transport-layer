@@ -17,6 +17,7 @@
     "lint:fix": "yarn run lint:fix:typescript",
     "lint:fix:typescript": "prettier --config prettier-config.json --write \"{src,exec,test}/**/*.ts\"",
     "start": "ts-node ./src/services/run.ts",
+    "start:local": "ts-node ./src/services/run.ts | pino-pretty",
     "test": "hardhat --config test/config/hardhat.config.ts test",
     "build": "tsc -p ."
   },
@@ -33,7 +34,6 @@
     "dotenv": "^8.2.0",
     "ethers": "^5.0.26",
     "express": "^4.17.1",
-    "express-pino-logger": "^6.0.0",
     "level": "^6.0.1",
     "levelup": "^4.4.0",
     "node-fetch": "^2.6.1"

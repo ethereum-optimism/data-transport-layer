@@ -2,7 +2,6 @@
 import { BaseService } from '@eth-optimism/service-base'
 import express, { Request, Response } from 'express'
 import cors from 'cors'
-import expressPinoLogger from 'express-pino-logger'
 import { BigNumber } from 'ethers'
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { LevelUp } from 'levelup'
@@ -121,7 +120,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       const start = Date.now()
       try {
         const json = await handler(req, res)
-        const elapsed = new Date().getTime() - start
+        const elapsed = Date.now() - start
         this.logger.info('Served HTTP Request', {
           method: req.method,
           url: req.url,
