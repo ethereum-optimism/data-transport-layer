@@ -163,8 +163,12 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
           expect(tx.decoded.data).to.equal(l2Tx.data)
           expect(tx.decoded.target).to.equal(l2Tx.to.toLowerCase())
           expect(tx.decoded.nonce).to.equal(l2Tx.nonce)
-          expect(tx.decoded.gasLimit).to.equal(BigNumber.from(l2Tx.gasLimit.hex).toNumber())
-          expect(tx.decoded.gasPrice).to.equal(BigNumber.from(l2Tx.gasPrice.hex).toNumber())
+          expect(tx.decoded.gasLimit).to.equal(
+            BigNumber.from(l2Tx.gasLimit.hex).toNumber()
+          )
+          expect(tx.decoded.gasPrice).to.equal(
+            BigNumber.from(l2Tx.gasPrice.hex).toNumber()
+          )
         }
       })
     })
