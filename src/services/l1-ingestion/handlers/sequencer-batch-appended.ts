@@ -244,6 +244,12 @@ const parseSequencerBatchTransaction = (
   return calldata.slice(offset + 3, offset + 3 + transactionLength)
 }
 
+/**
+ * Handles legacy decoding. It's fine if this isn't perfect because failures will only show up
+ * on the UI and have no impact on funds. Should be as good as possible, ideally.
+ * @param transaction Transaction to decode.
+ * @return Decoded transaction + type.
+ */
 const maybeDecodeSequencerBatchTransaction = (
   transaction: Buffer
 ): {
@@ -264,10 +270,6 @@ const maybeDecodeSequencerBatchTransaction = (
     } else {
       throw new Error(`Unknown sequencer transaction type.`)
     }
-    // Validate the transaction
-    if (!validateBatchTransaction(type, decoded)) {
-      decoded = null
-    }
   } catch (err) {
     // Do nothing
   }
@@ -276,22 +278,4 @@ const maybeDecodeSequencerBatchTransaction = (
     decoded,
     type,
   }
-}
-
-export function validateBatchTransaction(
-  type: string | null,
-  decoded: DecodedSequencerBatchTransaction | null
-): boolean {
-  // Unknown types are considered invalid
-  if (type === null) {
-    return false
-  }
-  if (type === 'EIP155' || type === 'ETH_SIGN') {
-    if (decoded.sig.v !== 1 && decoded.sig.v !== 0) {
-      return false
-    }
-    return true
-  }
-  // Allow soft forks
-  return false
 }
