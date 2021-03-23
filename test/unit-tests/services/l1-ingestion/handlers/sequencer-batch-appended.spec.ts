@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import { expect } from '../../../../setup'
 import {
   SequencerBatchAppendedExtraData,
@@ -159,10 +159,12 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
         if (tx.queueOrigin === 'l1') {
           expect(tx.decoded).to.be.null
         } else {
-          expect(tx.decoded.data).to.equal(blocksOnL2[i].transactions[0].data)
-          expect(tx.decoded.target).to.equal(
-            blocksOnL2[i].transactions[0].to.toLowerCase()
-          )
+          const l2Tx = blocksOnL2[i].transactions[0]
+          expect(tx.decoded.data).to.equal(l2Tx.data)
+          expect(tx.decoded.target).to.equal(l2Tx.to.toLowerCase())
+          expect(tx.decoded.nonce).to.equal(l2Tx.nonce)
+          expect(tx.decoded.gasLimit).to.equal(BigNumber.from(l2Tx.gasLimit.hex).toNumber())
+          expect(tx.decoded.gasPrice).to.equal(BigNumber.from(l2Tx.gasPrice.hex).toNumber())
         }
       })
     })
