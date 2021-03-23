@@ -48,7 +48,7 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
       default: 5000,
       validate: validators.isInteger,
     },
-    logsPerPollingInterval: {
+    l1BlocksPerPollingInterval: {
       default: 2000,
       validate: validators.isInteger,
     },
@@ -152,7 +152,7 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
           this.state.startingL1BlockNumber
         const currentL1Block = await this.state.l1RpcProvider.getBlockNumber()
         const targetL1Block = Math.min(
-          highestSyncedL1Block + this.options.logsPerPollingInterval,
+          highestSyncedL1Block + this.options.l1BlocksPerPollingInterval,
           currentL1Block - this.options.confirmations
         )
 
@@ -198,7 +198,7 @@ export class L1IngestionService extends BaseService<L1IngestionServiceOptions> {
 
         if (
           currentL1Block - highestSyncedL1Block <
-          this.options.logsPerPollingInterval
+          this.options.l1BlocksPerPollingInterval
         ) {
           await sleep(this.options.pollingInterval)
         }

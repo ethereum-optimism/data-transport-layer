@@ -18,13 +18,13 @@ export interface L1DataTransportServiceOptions {
   l2ChainId: number
   l2RpcProvider: string
   dbPath: string
-  logsPerPollingInterval: number
   pollingInterval: number
   port: number
   showUnconfirmedTransactions: boolean
   syncFromL1?: boolean
   syncFromL2?: boolean
-  transactionsPerPollingInterval: number
+  l1BlocksPerPollingInterval?: number
+  l2BlocksPerPollingInterval?: number
   legacySequencerCompatibility: boolean
   stopL2SyncAtBlock?: number
 }
