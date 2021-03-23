@@ -20,6 +20,7 @@ import {
 } from '../../types'
 import { validators } from '../../utils'
 import { L1DataTransportServiceOptions } from '../main/service'
+const DEFAULT_BACKEND = 'l2'
 
 export interface L1TransportServerOptions
   extends L1DataTransportServiceOptions {
@@ -307,7 +308,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       'get',
       '/transaction/latest',
       async (req): Promise<TransactionResponse> => {
-        const backend = req.query.backend || 'l1'
+        const backend = req.query.backend || DEFAULT_BACKEND
         let transaction = null
 
         switch (backend) {
@@ -343,7 +344,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       'get',
       '/transaction/index/:index',
       async (req): Promise<TransactionResponse> => {
-        const backend = req.query.backend || 'l1'
+        const backend = req.query.backend || DEFAULT_BACKEND
         let transaction = null
 
         switch (backend) {
@@ -437,7 +438,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       'get',
       '/stateroot/latest',
       async (req): Promise<StateRootResponse> => {
-        const backend = req.query.backend || 'l1'
+        const backend = req.query.backend || DEFAULT_BACKEND
         let stateRoot = null
 
         switch (backend) {
@@ -473,7 +474,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
       'get',
       '/stateroot/index/:index',
       async (req): Promise<StateRootResponse> => {
-        const backend = req.query.backend || 'l1'
+        const backend = req.query.backend || DEFAULT_BACKEND
         let stateRoot = null
 
         switch (backend) {
