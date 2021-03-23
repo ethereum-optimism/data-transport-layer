@@ -6,7 +6,7 @@ import {
   handleEventsSequencerBatchAppended,
 } from '../../../../../src/services/l1-ingestion/handlers/sequencer-batch-appended'
 import { l1TransactionData } from '../../../examples/l1-data'
-import * as l2Blocks from '../../../examples/l2-blocks.json'
+import { blocksOnL2 } from '../../../examples/l2-data'
 
 describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended', () => {
   describe('validateBatchTransaction', () => {
@@ -155,20 +155,16 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
         .be.true
 
       // Sequencer transactions are decoded, but l1 transactions are not
-      expect(
-        txEntries.every((t, i) =>
-          t.queueOrigin === 'l1'
-            ? t.decoded === null
-            : t.decoded.target === l2Blocks[i].transactions[0].to.toLowerCase()
-        )
-      ).to.be.true
-      expect(
-        txEntries.every((t, i) =>
-          t.queueOrigin === 'l1'
-            ? t.decoded === null
-            : t.decoded.data === l2Blocks[i].transactions[0].data
-        )
-      ).to.be.true
+      txEntries.forEach((tx, i) => {
+        if (tx.queueOrigin === 'l1') {
+          expect(tx.decoded).to.be.null
+        } else {
+          expect(tx.decoded.data).to.equal(blocksOnL2[i].transactions[0].data)
+          expect(tx.decoded.target).to.equal(
+            blocksOnL2[i].transactions[0].to.toLowerCase()
+          )
+        }
+      })
     })
 
     it('should error on malformed transaction data', async () => {
@@ -181,7 +177,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
           },
         },
         {
-          l1TransactionData: '0xgibberish',
+          l1TransactionData: '0x00000',
           timestamp: 0,
           blockNumber: 0,
           submitter: '',
