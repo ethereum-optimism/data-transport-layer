@@ -134,7 +134,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
           method: req.method,
           url: req.url,
           elapsed,
-          msg: e.toString()
+          msg: e.toString(),
         })
         return res.status(400).json({
           error: e.toString(),
@@ -194,7 +194,7 @@ export class L1TransportServer extends BaseService<L1TransportServerOptions> {
         const gasPrice = await this.state.l1RpcProvider.getGasPrice()
 
         return {
-          gasPrice: gasPrice.toString()
+          gasPrice: gasPrice.toString(),
         }
       }
     )

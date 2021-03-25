@@ -22,27 +22,31 @@ import {
   SEQUENCER_GAS_LIMIT,
 } from '../../../utils'
 
+export interface SequencerBatchAppendedExtraData {
+  timestamp: number
+  blockNumber: number
+  submitter: string
+  l1TransactionData: string
+  l1TransactionHash: string
+  gasLimit: number
+
+  // Stuff from TransactionBatchAppended.
+  prevTotalElements: BigNumber
+  batchIndex: BigNumber
+  batchSize: BigNumber
+  batchRoot: string
+  batchExtraData: string
+}
+
+export interface SequencerBatchAppendedParsedEvent {
+  transactionBatchEntry: TransactionBatchEntry
+  transactionEntries: TransactionEntry[]
+}
+
 export const handleEventsSequencerBatchAppended: EventHandlerSet<
   EventArgsSequencerBatchAppended,
-  {
-    timestamp: number
-    blockNumber: number
-    submitter: string
-    l1TransactionData: string
-    l1TransactionHash: string
-    gasLimit: number
-
-    // Stuff from TransactionBatchAppended.
-    prevTotalElements: BigNumber
-    batchIndex: BigNumber
-    batchSize: BigNumber
-    batchRoot: string
-    batchExtraData: string
-  },
-  {
-    transactionBatchEntry: TransactionBatchEntry
-    transactionEntries: TransactionEntry[]
-  }
+  SequencerBatchAppendedExtraData,
+  SequencerBatchAppendedParsedEvent
 > = {
   getExtraData: async (event, l1RpcProvider) => {
     const l1Transaction = await event.getTransaction()
@@ -99,6 +103,12 @@ export const handleEventsSequencerBatchAppended: EventHandlerSet<
     // It's easier to deal with this data if it's a Buffer.
     const calldata = fromHexString(extraData.l1TransactionData)
 
+    if (calldata.length < 12) {
+      throw new Error(
+        `Block ${extraData.blockNumber} transaction data is invalid for decoding: ${extraData.l1TransactionData} , ` +
+          `converted buffer length is < 12.`
+      )
+    }
     const numContexts = BigNumber.from(calldata.slice(12, 15)).toNumber()
     let transactionIndex = 0
     let enqueuedCount = 0

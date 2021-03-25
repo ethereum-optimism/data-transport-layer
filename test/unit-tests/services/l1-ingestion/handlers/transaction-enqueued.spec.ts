@@ -1,10 +1,9 @@
-import { expect } from '../../../../setup'
+import { ethers, BigNumber } from 'ethers'
 
+import { expect } from '../../../../setup'
 import { handleEventsTransactionEnqueued } from '../../../../../src/services/l1-ingestion/handlers/transaction-enqueued'
-import { BigNumber } from 'ethers'
 
 const MAX_ITERATIONS = 128
-const BIG_NUMBER_ZERO = BigNumber.from(0)
 
 describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', () => {
   describe('getExtraData', () => {
@@ -27,17 +26,15 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
         {
           blockNumber: 0,
           args: {
-            _queueIndex: BIG_NUMBER_ZERO,
-            _gasLimit: BIG_NUMBER_ZERO,
-            _timestamp: BIG_NUMBER_ZERO,
+            _queueIndex: ethers.constants.Zero,
+            _gasLimit: ethers.constants.Zero,
+            _timestamp: ethers.constants.Zero,
           },
         },
         null,
       ]
 
-      const output1 = handleEventsTransactionEnqueued.parseEvent(
-        ...input1
-      )
+      const output1 = handleEventsTransactionEnqueued.parseEvent(...input1)
 
       const expected1 = null
 
@@ -54,17 +51,15 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           {
             blockNumber: i,
             args: {
-              _queueIndex: BIG_NUMBER_ZERO,
-              _gasLimit: BIG_NUMBER_ZERO,
-              _timestamp: BIG_NUMBER_ZERO,
+              _queueIndex: ethers.constants.Zero,
+              _gasLimit: ethers.constants.Zero,
+              _timestamp: ethers.constants.Zero,
             },
           },
           null,
         ]
 
-        const output1 = handleEventsTransactionEnqueued.parseEvent(
-          ...input1
-        )
+        const output1 = handleEventsTransactionEnqueued.parseEvent(...input1)
 
         const expected1 = BigNumber.from(i).toNumber()
 
@@ -83,16 +78,14 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
             blockNumber: 0,
             args: {
               _queueIndex: BigNumber.from(i),
-              _gasLimit: BIG_NUMBER_ZERO,
-              _timestamp: BIG_NUMBER_ZERO,
+              _gasLimit: ethers.constants.Zero,
+              _timestamp: ethers.constants.Zero,
             },
           },
           null,
         ]
 
-        const output1 = handleEventsTransactionEnqueued.parseEvent(
-          ...input1
-        )
+        const output1 = handleEventsTransactionEnqueued.parseEvent(...input1)
 
         const expected1 = BigNumber.from(i).toNumber()
 
@@ -110,17 +103,15 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           {
             blockNumber: 0,
             args: {
-              _queueIndex: BIG_NUMBER_ZERO,
+              _queueIndex: ethers.constants.Zero,
               _gasLimit: BigNumber.from(i),
-              _timestamp: BIG_NUMBER_ZERO,
+              _timestamp: ethers.constants.Zero,
             },
           },
           null,
         ]
 
-        const output1 = handleEventsTransactionEnqueued.parseEvent(
-          ...input1
-        )
+        const output1 = handleEventsTransactionEnqueued.parseEvent(...input1)
 
         const expected1 = BigNumber.from(i).toNumber()
 
@@ -138,17 +129,15 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.TransactionEnqueued', ()
           {
             blockNumber: 0,
             args: {
-              _queueIndex: BIG_NUMBER_ZERO,
-              _gasLimit: BIG_NUMBER_ZERO,
+              _queueIndex: ethers.constants.Zero,
+              _gasLimit: ethers.constants.Zero,
               _timestamp: BigNumber.from(i),
             },
           },
           null,
         ]
 
-        const output1 = handleEventsTransactionEnqueued.parseEvent(
-          ...input1
-        )
+        const output1 = handleEventsTransactionEnqueued.parseEvent(...input1)
 
         const expected1 = BigNumber.from(i).toNumber()
 
