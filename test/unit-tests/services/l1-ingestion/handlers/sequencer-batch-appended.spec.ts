@@ -119,6 +119,23 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
   describe('handleEventsSequencerBatchAppended.parseEvent', () => {
     // This tests the behavior of parsing a real mainnet transaction,
     // so it will break if the encoding scheme changes.
+
+    // Transaction and extra data from
+    // https://etherscan.io/tx/0x6effe006836b841205ace4d99d7ae1b74ee96aac499a3f358b97fccd32ee9af2
+    const exampleExtraData = {
+      timestamp: 1614862375,
+      blockNumber: 11969713,
+      submitter: '0xfd7d4de366850c08ee2cba32d851385a3071ec8d',
+      l1TransactionHash:
+        '0x6effe006836b841205ace4d99d7ae1b74ee96aac499a3f358b97fccd32ee9af2',
+      gasLimit: 548976,
+      prevTotalElements: BigNumber.from(73677),
+      batchIndex: BigNumber.from(743),
+      batchSize: BigNumber.from(101),
+      batchRoot:
+        '10B99425FB53AD7D40A939205C0F7B35CBB89AB4D67E7AE64BDAC5F1073943B4',
+      batchExtraData: '',
+    }
     it('should correctly parse a mainnet transaction', async () => {
       const input1: [any, SequencerBatchAppendedExtraData] = [
         {
@@ -130,24 +147,30 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
         },
         {
           l1TransactionData,
-          timestamp: 0,
-          blockNumber: 0,
-          submitter: '',
-          l1TransactionHash: '',
-          gasLimit: 0,
-          prevTotalElements: ethers.constants.Zero,
-          batchIndex: ethers.constants.Zero,
-          batchSize: ethers.constants.Zero,
-          batchRoot: '',
-          batchExtraData: '',
+          ...exampleExtraData,
         },
       ]
 
       const output1 = await handleEventsSequencerBatchAppended.parseEvent(
         ...input1
       )
+      
+      const batchEntry = output1.transactionBatchEntry
+      expect(batchEntry.index).to.eq(exampleExtraData.batchIndex.toNumber())
+      expect(batchEntry.root).to.eq(exampleExtraData.batchRoot)
+      expect(batchEntry.size).to.eq(exampleExtraData.batchSize.toNumber())
+      expect(batchEntry.prevTotalElements).to.eq(
+        exampleExtraData.prevTotalElements.toNumber()
+      )
+      expect(batchEntry.extraData).to.eq(exampleExtraData.batchExtraData)
+      expect(batchEntry.blockNumber).to.eq(exampleExtraData.blockNumber)
+      expect(batchEntry.timestamp).to.eq(exampleExtraData.timestamp)
+      expect(batchEntry.submitter).to.eq(exampleExtraData.submitter)
+      expect(batchEntry.l1TransactionHash).to.eq(
+        exampleExtraData.l1TransactionHash
+      )
 
-      // Expected results based on mainnet data
+      // Expected transaction entry results based on mainnet data
       // Source: https://ethtx.info/mainnet/0x6effe006836b841205ace4d99d7ae1b74ee96aac499a3f358b97fccd32ee9af2
       const txEntries = output1.transactionEntries
       expect(txEntries).to.have.length(101)
@@ -184,16 +207,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
         },
         {
           l1TransactionData: '0x00000',
-          timestamp: 0,
-          blockNumber: 0,
-          submitter: '',
-          l1TransactionHash: '',
-          gasLimit: 0,
-          prevTotalElements: ethers.constants.Zero,
-          batchIndex: ethers.constants.Zero,
-          batchSize: ethers.constants.Zero,
-          batchRoot: '',
-          batchExtraData: '',
+          ...exampleExtraData,
         },
       ]
 
