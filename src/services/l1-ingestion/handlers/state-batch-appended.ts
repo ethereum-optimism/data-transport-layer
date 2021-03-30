@@ -10,19 +10,23 @@ import {
   EventHandlerSet,
 } from '../../../types'
 
+export interface StateBatchAppendedExtraData {
+  timestamp: number
+  blockNumber: number
+  submitter: string
+  l1TransactionHash: string
+  l1TransactionData: string
+}
+
+export interface StateBatchAppendedParsedEvent {
+  stateRootBatchEntry: StateRootBatchEntry
+  stateRootEntries: StateRootEntry[]
+}
+
 export const handleEventsStateBatchAppended: EventHandlerSet<
   EventArgsStateBatchAppended,
-  {
-    timestamp: number
-    blockNumber: number
-    submitter: string
-    l1TransactionHash: string
-    l1TransactionData: string
-  },
-  {
-    stateRootBatchEntry: StateRootBatchEntry
-    stateRootEntries: StateRootEntry[]
-  }
+  StateBatchAppendedExtraData,
+  StateBatchAppendedParsedEvent
 > = {
   getExtraData: async (event) => {
     const eventBlock = await event.getBlock()
