@@ -154,7 +154,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
       const output1 = await handleEventsSequencerBatchAppended.parseEvent(
         ...input1
       )
-      
+
       const batchEntry = output1.transactionBatchEntry
       expect(batchEntry.index).to.eq(exampleExtraData.batchIndex.toNumber())
       expect(batchEntry.root).to.eq(exampleExtraData.batchRoot)

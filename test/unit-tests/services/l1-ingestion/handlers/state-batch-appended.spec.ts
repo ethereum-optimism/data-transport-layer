@@ -11,20 +11,22 @@ import { l1StateBatchData } from '../../../examples/l1-data'
 describe('Event Handlers: OVM_CanonicalTransactionChain.StateBatchAppended', () => {
   describe('getExtraData', () => {
     it('should return event block and transaction', async () => {
+      // Source: https://etherscan.io/tx/0x4ca72484e93cdb50fe1089984db152258c2bbffc2534dcafbfe032b596bd5b49
       const l1Transaction = {
         hash:
           '0x4ca72484e93cdb50fe1089984db152258c2bbffc2534dcafbfe032b596bd5b49',
         from: '0xfd7d4de366850c08ee2cba32d851385a3071ec8d',
-        data: '0xdata',
+        data: l1StateBatchData,
       }
+      // Source: https://etherscan.io/block/12106615
       const eventBlock: Block = {
-        timestamp: 1614862375,
-        number: 11969713,
+        timestamp: 1616680530,
+        number: 12106615,
         hash:
           '0x9c40310e19e943ad38e170329465c4489f6aba5895e9cacdac236be181aea31f',
         parentHash:
           '0xc7707a04c287a22ff4e43e5d9316e45ab342dcd405e7e0284eb51ce71a3a29ac',
-        miner: '0xfd7d4de366850c08ee2cba32d851385a3071ec8d',
+        miner: '0xea674fdde714fd979de3edf0f56aa9716b898ec8',
         nonce: '0x40e6174f521a7cd8',
         difficulty: 5990647962682594,
         gasLimit: BigNumber.from(548976),
@@ -53,6 +55,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.StateBatchAppended', () 
 
   describe('parseEvent', () => {
     it('should have a ctcIndex equal to null', () => {
+      // Source: https://etherscan.io/tx/0x4ca72484e93cdb50fe1089984db152258c2bbffc2534dcafbfe032b596bd5b49#eventlog
       const event = {
         args: {
           _batchIndex: BigNumber.from(144),
@@ -66,7 +69,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.StateBatchAppended', () 
       }
       const extraData: StateBatchAppendedExtraData = {
         l1TransactionData: l1StateBatchData,
-        timestamp: 1614862375,
+        timestamp: 1616680530,
         blockNumber: 12106615,
         submitter: '0xfd7d4de366850c08ee2cba32d851385a3071ec8d',
         l1TransactionHash:
@@ -76,6 +79,9 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.StateBatchAppended', () 
 
       const output1 = handleEventsStateBatchAppended.parseEvent(...input1)
 
+      expect(output1.stateRootEntries.length).to.eq(
+        event.args._batchSize.toNumber()
+      )
       output1.stateRootEntries.forEach((entry, i) => {
         expect(entry.index).to.eq(
           event.args._prevTotalElements.add(BigNumber.from(i)).toNumber()
