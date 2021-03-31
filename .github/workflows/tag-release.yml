@@ -69,7 +69,7 @@ jobs:
           git clone https://github.com/ethereum-optimism/docker.git \
               $HOME/docker
           cd $HOME/docker
-          ./build.sh -s data-transport-layer -b ${{ needs.tag.outputs.tag_name }}
-          docker push ethereumoptimism/data-transport-layer:${{ needs.tag.outputs.tag_name }}
+          ./build.sh -s transaction-indexer -b ${{ needs.tag.outputs.tag_name }}
+          docker push ethereumoptimism/transaction-indexer:${{ needs.tag.outputs.tag_name }}
       - name: Logout of DockerHub
         run: docker logout

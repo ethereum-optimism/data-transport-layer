@@ -31,12 +31,12 @@ jobs:
           REMOTE=${{ github.event.pull_request.head.repo.html_url }}
           echo "optimism-integration $GIT_COMMIT"
           if [ -z $REMOTE ]; then
-            ./docker/build.sh -s data-transport-layer -b $GITHUB_HEAD_REF
+            ./docker/build.sh -s transaction-indexer -b $GITHUB_HEAD_REF
           else
-            ./docker/build.sh -s data-transport-layer -b $GITHUB_HEAD_REF -r $REMOTE
+            ./docker/build.sh -s transaction-indexer -b $GITHUB_HEAD_REF -r $REMOTE
           fi
 
       - name: Test
         run: |
           cd $HOME/optimism-integration
-          DATA_TRANSPORT_LAYER_TAG=$GITHUB_HEAD_REF ./test.sh
+          TRANSACTION_INDEXER_TAG=$GITHUB_HEAD_REF ./test.sh

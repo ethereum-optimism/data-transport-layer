@@ -24,11 +24,11 @@ jobs:
           cd $HOME/docker
           BRANCH=${GITHUB_REF##*/}
           REMOTE="https://github.com/${{ github.repository }}"
-          ./build.sh -s data-transport-layer -b $BRANCH -r $REMOTE
+          ./build.sh -s transaction-indexer -b $BRANCH -r $REMOTE
           if [ $BRANCH == 'master' ]; then
-              docker push ethereumoptimism/data-transport-layer:latest
+              docker push ethereumoptimism/transaction-indexer:latest
           elif [[ $BRANCH == 'testnet' ]]; then
-              docker push ethereumoptimism/data-transport-layer:$BRANCH
+              docker push ethereumoptimism/transaction-indexer:$BRANCH
           fi
       - name: Logout of DockerHub
         run: docker logout

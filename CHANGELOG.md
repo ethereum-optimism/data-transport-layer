@@ -1,4 +1,4 @@
-# data transport layer
+# @eth-optimism/transaction-indexer
 
 ## v0.1.2
 

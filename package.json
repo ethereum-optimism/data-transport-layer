@@ -1,5 +1,5 @@
 {
-  "name": "@eth-optimism/data-transport-layer",
+  "name": "@eth-optimism/transaction-indexer",
   "version": "0.1.2",
   "main": "build/index.js",
   "license": "MIT",
