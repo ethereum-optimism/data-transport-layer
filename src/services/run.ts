@@ -16,7 +16,7 @@ interface Bcfg {
   try {
     dotenv.config()
 
-    const config: Bcfg = new Config('data-transport-layer')
+    const config: Bcfg = new Config('transaction-indexer')
     config.load({
       env: true,
       argv: true,
