@@ -1,10 +1,10 @@
 import { BigNumber, ethers } from 'ethers'
 import { expect } from '../../../../setup'
 import {
-  SequencerBatchAppendedExtraData,
   validateBatchTransaction,
   handleEventsSequencerBatchAppended,
 } from '../../../../../src/services/l1-ingestion/handlers/sequencer-batch-appended'
+import { SequencerBatchAppendedExtraData } from '../../../../../src/types'
 import { l1TransactionData } from '../../../examples/l1-data'
 import { blocksOnL2 } from '../../../examples/l2-data'
 
@@ -154,7 +154,7 @@ describe('Event Handlers: OVM_CanonicalTransactionChain.SequencerBatchAppended',
       const output1 = await handleEventsSequencerBatchAppended.parseEvent(
         ...input1
       )
-      
+
       const batchEntry = output1.transactionBatchEntry
       expect(batchEntry.index).to.eq(exampleExtraData.batchIndex.toNumber())
       expect(batchEntry.root).to.eq(exampleExtraData.batchRoot)
