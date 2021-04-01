@@ -6,22 +6,11 @@ import { BigNumber } from 'ethers'
 import {
   EventArgsStateBatchAppended,
   StateRootBatchEntry,
+  StateBatchAppendedExtraData,
+  StateBatchAppendedParsedEvent,
   StateRootEntry,
   EventHandlerSet,
 } from '../../../types'
-
-export interface StateBatchAppendedExtraData {
-  timestamp: number
-  blockNumber: number
-  submitter: string
-  l1TransactionHash: string
-  l1TransactionData: string
-}
-
-export interface StateBatchAppendedParsedEvent {
-  stateRootBatchEntry: StateRootBatchEntry
-  stateRootEntries: StateRootEntry[]
-}
 
 export const handleEventsStateBatchAppended: EventHandlerSet<
   EventArgsStateBatchAppended,
