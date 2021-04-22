@@ -241,8 +241,33 @@ const maybeDecodeSequencerBatchTransaction = (
   decoded: DecodedSequencerBatchTransaction | null
   type: 'EIP155' | 'ETH_SIGN' | null
 } => {
-  let decoded = null
-  let type = null
+  let decoded: DecodedSequencerBatchTransaction = null
+  let type: 'EIP155' | 'ETH_SIGN' = null
+
+  try {
+    // Try to decode as RLP first. This function will throw if the transaction can't be properly
+    // decoded as RLP and we'll get bumped down to the next set of possible decodings.
+    const decodedTx = ethers.utils.parseTransaction(transaction)
+
+    return {
+      type: 'EIP155',
+      decoded: {
+        nonce: BigNumber.from(decodedTx.nonce).toNumber(),
+        gasPrice: BigNumber.from(decodedTx.gasPrice).toNumber(),
+        gasLimit: BigNumber.from(decodedTx.gasLimit).toNumber(),
+        target: toHexString(decodedTx.to), // Maybe null this out for creations?
+        data: toHexString(decodedTx.data),
+        sig: {
+          v: BigNumber.from(decodedTx.v).toNumber(),
+          r: toHexString(decodedTx.r),
+          s: toHexString(decodedTx.s),
+        },
+        type: 0, // EIP155 legacy holdover.
+      },
+    }
+  } catch (err) {
+    // Do nothing, fall back to legacy decode.
+  }
 
   try {
     const txType = transaction.slice(0, 1).readUInt8()
